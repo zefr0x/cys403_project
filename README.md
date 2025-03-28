@@ -1,3 +1,8 @@
+> [!WARNING]
+> This repository/project is a university project. It neither had security
+> auditing nor intended to be secure and is not maintained. If you are
+> interested in the project, it's free software under the GPL-3.0 license.
+
 <div align = center>
 
 <h1>CYS-403 Project</h1>
