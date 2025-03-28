@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+Name=cys403_project
+Comment=
+GenericName=
+Exec=cys403_project
+SingleMainWindow=true
+Icon=io.github.zefr0x.cys403_project
+Terminal=false
+Categories=
+Keywords=

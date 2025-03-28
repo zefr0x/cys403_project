@@ -1,0 +1,4 @@
+data/io.github.zefr0x.cys403_project.desktop.in
+data/io.github.zefr0x.cys403_project.metainfo.xml.in
+cys403_project/ui/main.py
+cys403_project/ui/main_window.py

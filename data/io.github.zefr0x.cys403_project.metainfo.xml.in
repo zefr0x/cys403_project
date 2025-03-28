@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component type="desktop-application">
+    <metadata_license>CC-BY-SA-4.0</metadata_license>
+    <project_license>GPL-3.0-only</project_license>
+    <id>io.github.zefr0x.cys403_project</id>
+    <name>cys403_project</name>
+    <developer id="io.github.zefr0x">
+        <name translatable="no">zefr0x</name>
+    </developer>
+    <launchable type="desktop-id">io.github.zefr0x.cys403_project.desktop</launchable>
+    <content_rating type="oars-1.0"></content_rating>
+    <translation type="gettext" source_locale="en_GB">io.github.zefr0x.cys403_project</translation>
+    <url type="homepage">https://github.com/zefr0x/cys403_project</url>
+    <url type="help">https://github.com/zefr0x/cys403_project</url>
+    <url type="bugtracker">https://github.com/zefr0x/cys403_project/issues</url>
+    <url type="vcs-browser">https://github.com/zefr0x/cys403_project</url>
+    <url type="contribute">https://github.com/zefr0x/cys403_project/blob/main/CONTRIBUTING.md</url>
+</component>
