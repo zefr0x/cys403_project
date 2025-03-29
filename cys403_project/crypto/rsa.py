@@ -1,30 +1,25 @@
 """Implementation of the RSAEncryptor class."""
 
-from dataclasses import dataclass
+from hashlib import sha256
 from typing import Optional
 
-from Crypto.Cipher import AES, PKCS1_OAEP
-from Crypto.PublicKey import RSA
-from Crypto.Random import get_random_bytes
+from Crypto.Util.number import getPrime
 
 
-@dataclass
-class EncryptedData:
-    """
-    A class to represent encrypted data.
+class PrivateKeyError(Exception):
+    """Exception for missing private key errors."""
 
-    Attributes:
-        encrypted_key (bytes): The encrypted AES key.
-        nonce (bytes): The nonce used for AES encryption.
-        tag (bytes): The authentication tag for the AES encryption.
-        ciphertext (bytes): The actual encrypted data.
 
-    """
+class PublicKeyError(Exception):
+    """Exception for missing public key errors."""
 
-    encrypted_key: bytes
-    nonce: bytes
-    tag: bytes
-    ciphertext: bytes
+
+class PadError(Exception):
+    """Exception for incorrect / missing padding errors."""
+
+
+class MessageTooLongError(Exception):
+    """Exception for message longer than modulus errors."""
 
 
 class RSAEncryptor:
@@ -36,20 +31,25 @@ class RSAEncryptor:
     """
 
     def __init__(
-        self, public_key: Optional[bytes] = None, private_key: Optional[bytes] = None
+        self,
+        public_key: Optional[tuple[bytes, bytes]] = None,
+        private_key: Optional[tuple[bytes, bytes]] = None,
     ) -> None:
         """
         Initialize the RSAEncryptor with optional public and private keys.
 
         Args:
-            public_key: The public key for encryption (default is None).
-            private_key: The private key for decryption (default is None).
+            public_key (tuple): public key for encryption (e, n) (default is None).
+            private_key (tuple): private key for decryption (d, n) (default is None).
 
         """
         self.public_key = public_key
         self.private_key = private_key
 
-    def keygen(self, size: int = 2048) -> None:
+    @staticmethod
+    def keygen(
+        size: int = 2048, e: int = 65537
+    ) -> tuple[tuple[bytes, bytes], tuple[bytes, bytes]]:
         """
         Generate a new RSA key pair.
 
@@ -57,75 +57,100 @@ class RSAEncryptor:
 
         Args:
             size: The size of the key in bits (default is 2048).
+            e: The public exponent (default is 65537).
 
         Returns:
-            None
+            Tuple: A tuple containing the public and private keys.
 
         """
-        key = RSA.generate(size)
-        self.public_key = key.publickey().export_key()
-        self.private_key = key.export_key()
+        # generate two large prime numbers
+        p = getPrime(size)
+        q = getPrime(size)
 
-    def encrypt(self, data: bytes) -> EncryptedData:
+        n = p * q
+        phi = (p - 1) * (q - 1)
+        d = pow(e, -1, phi)
+        public_key = (
+            e.to_bytes((e.bit_length() + 7) // 8, "big"),
+            n.to_bytes((n.bit_length() + 7) // 8, "big"),
+        )
+        private_key = (
+            d.to_bytes((d.bit_length() + 7) // 8, "big"),
+            n.to_bytes((n.bit_length() + 7) // 8, "big"),
+        )
+        return public_key, private_key
+
+    def encrypt(self, data: bytes) -> bytes:
         """
-        Encrypts the given data.
-
-        Due to RSA being inefficient for large data,
-        we use AES for the data and RSA with OAEP for the symmetric key.
+        Encrypts the given data with some padding.
 
         Args:
             data (bytes): The data to encrypt.
 
         Raises:
             ValueError: If the public key is not set.
+            ValueError: If the message is longer than the modulus.
 
         Returns:
-            EncryptedData: An object containing the encrypted AES key,
-            nonce, tag, and ciphertext.
+            bytes: encrypted data with padding.
 
         """
         if not self.public_key:
-            raise ValueError("Public key is not set.")
+            msg = "Public key is not set."
+            raise PublicKeyError(msg)
 
-        # Generate a random AES key
-        aes_key = get_random_bytes(32)  # 256-bit AES key
-        # Encrypt the AES key using RSA and OAEP
-        oaep_rsa = PKCS1_OAEP.new(RSA.import_key(self.public_key))
-        encrypted_aes_key = oaep_rsa.encrypt(aes_key)
-
-        # Encrypt the data using AES in EAX mode
-        cipher_aes = AES.new(aes_key, AES.MODE_EAX)
-        ciphertext, tag = cipher_aes.encrypt_and_digest(data)
-
-        return EncryptedData(
-            encrypted_key=encrypted_aes_key,
-            nonce=cipher_aes.nonce,
-            tag=tag,
-            ciphertext=ciphertext,
+        m_int = int.from_bytes(data, byteorder="big")
+        e, n = (
+            int.from_bytes(self.public_key[0], byteorder="big"),
+            int.from_bytes(self.public_key[1], byteorder="big"),
         )
+        if m_int >= n:
+            # change this so he stops complaining later
+            msg = "Message longer than modulus."
+            raise MessageTooLongError(msg)
 
-    def decrypt(self, data: EncryptedData) -> bytes:
+        # padding
+        h = sha256()
+        h.update(b"")
+        hashl = h.digest()
+        padding = b"\x00" * (n.bit_length() // 8 - len(hashl) - 2)
+        m = padding + b"\x01" + hashl + data
+
+        # encryption
+        m_int = int.from_bytes(m, byteorder="big")
+        c_int = pow(m_int, e, n)
+        return c_int.to_bytes((n.bit_length() + 7) // 8, byteorder="big")
+
+    def decrypt(self, data: bytes) -> bytes:
         """
-        Decrypts the given data using RSA algorithm.
+        Decrypts the given data using RSA algorithm and removes padding.
 
         Args:
-            data (EncryptedData): The encrypted data object containing the encrypted
-                AES key, nonce, tag, and ciphertext.
+            data (bytes): The encrypted data to decrypt.
 
         Raises:
             ValueError: If the private key is not set.
 
         Returns:
-            bytes: The decrypted data.
+            bytes: The decrypted data without padding.
 
         """
         if not self.private_key:
-            raise ValueError("Private key is not set.")
+            msg = "Private key is not set."
+            raise PrivateKeyError(msg)
 
-        # Decrypt the AES key using RSA and OAEP
-        oaep_rsa = PKCS1_OAEP.new(RSA.import_key(self.private_key))
-        aes_key = oaep_rsa.decrypt(data.encrypted_key)
-        # Decrypt the data using AES
-        cipher_aes = AES.new(aes_key, AES.MODE_EAX, nonce=data.nonce)
+        d = int.from_bytes(self.private_key[0], byteorder="big")
+        n = int.from_bytes(self.private_key[1], byteorder="big")
+        c_int = int.from_bytes(data, byteorder="big")
 
-        return cipher_aes.decrypt_and_verify(data.ciphertext, data.tag)
+        # Decrypt the ciphertext
+        m_int = pow(c_int, d, n)
+        m = m_int.to_bytes((n.bit_length() + 7) // 8, byteorder="big")
+
+        # Remove padding
+        padding_index = m.find(b"\x01")
+        if padding_index == -1:
+            msg = "Invalid padding in decrypted message."
+            raise PadError(msg)
+
+        return m[padding_index + 1 + sha256().digest_size :]
