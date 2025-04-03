@@ -17,6 +17,8 @@ from cys403_project.__about__ import (
     PROJECT_HOME_PAGE_URL,
 )
 
+from .rsa_page import RsaPage
+
 gi.require_version("Adw", "1")
 gi.require_version("Gtk", "4.0")
 from gi.repository import (  # noqa: E402
@@ -47,15 +49,34 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         main_layout = Adw.ToolbarView()
         self.set_content(main_layout)
 
-        # Window header
-        main_layout.add_top_bar(self.__build_header())
+        # View switcher
+        view_switcher = Adw.ViewSwitcher()
+        view_switcher.set_policy(Adw.ViewSwitcherPolicy.WIDE)
 
-        # Content layout
-        main_content = Adw.Bin()
+        # View stack
+        view_stack = Adw.ViewStack()
+        view_switcher.set_stack(view_stack)
+
+        rsa_page = RsaPage(self)
+
+        view_stack.add_titled_with_icon(
+            rsa_page, "rsa", "RSA", "network-wireless-encrypted-symbolic"
+        )
+
+        # Window header
+        header = self.__build_header()
+        header.set_title_widget(view_switcher)
+        main_layout.add_top_bar(header)
 
         # Main Overlay
-        self._overlay = Adw.ToastOverlay(child=main_content)
+        self._overlay = Adw.ToastOverlay(child=view_stack)
         main_layout.set_content(self._overlay)
+
+        # Bottom bar
+        view_switcher_bar = Adw.ViewSwitcherBar()
+        view_switcher_bar.set_stack(view_stack)
+
+        main_layout.add_bottom_bar(view_switcher_bar)
 
     def __build_header(self) -> Adw.HeaderBar:
         """Create the header bar for the application."""

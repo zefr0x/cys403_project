@@ -11,9 +11,10 @@ from cys403_project.crypto.rsa import (
 )
 
 
-def test_keygen() -> None:
+@pytest.mark.asyncio
+async def test_keygen() -> None:
     """Test RSA key generation."""
-    public_key, private_key = RSAEncryptor.keygen()
+    public_key, private_key = await RSAEncryptor.keygen()
     assert isinstance(public_key, tuple)
     assert isinstance(private_key, tuple)
     assert len(public_key) == 2
@@ -24,9 +25,10 @@ def test_keygen() -> None:
     assert isinstance(private_key[1], bytes)
 
 
-def test_encrypt_decrypt() -> None:
+@pytest.mark.asyncio
+async def test_encrypt_decrypt() -> None:
     """Test RSA encryption and decryption."""
-    public_key, private_key = RSAEncryptor.keygen()
+    public_key, private_key = await RSAEncryptor.keygen()
     rsa = RSAEncryptor(public_key=public_key, private_key=private_key)
 
     message = b"Test message"
@@ -51,9 +53,12 @@ def test_decrypt_without_private_key() -> None:
         rsa.decrypt(b"Encrypted message")
 
 
-def test_message_too_long() -> None:
+@pytest.mark.asyncio
+async def test_message_too_long() -> None:
     """Test encryption with a message longer than the modulus."""
-    public_key, private_key = RSAEncryptor.keygen(size=16)  # Small key size for testing
+    public_key, private_key = await RSAEncryptor.keygen(
+        size=16
+    )  # Small key size for testing
     rsa = RSAEncryptor(public_key=public_key)
 
     message = b"A" * 1000  # Message longer than modulus
@@ -61,9 +66,10 @@ def test_message_too_long() -> None:
         rsa.encrypt(message)
 
 
-def test_invalid_padding() -> None:
+@pytest.mark.asyncio
+async def test_invalid_padding() -> None:
     """Test decryption with invalid padding."""
-    public_key, private_key = RSAEncryptor.keygen()
+    public_key, private_key = await RSAEncryptor.keygen()
     rsa = RSAEncryptor(private_key=private_key)
 
     # Create an invalid encrypted message

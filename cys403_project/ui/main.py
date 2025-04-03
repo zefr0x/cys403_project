@@ -1,9 +1,11 @@
 """Main file for the GUI."""
 
+import asyncio
 import contextlib
 from collections.abc import Sequence
 
 import gi
+from gi.events import GLibEventLoopPolicy
 
 from cys403_project.__about__ import APP_ID, APP_NAME
 
@@ -52,5 +54,6 @@ class Cys403Project(Adw.Application):
 
 def main_ui(argv: Sequence[str]) -> int:
     """Launch the UI with arguments."""
+    asyncio.set_event_loop_policy(GLibEventLoopPolicy())
     app = Cys403Project()
     return app.run(list(argv))

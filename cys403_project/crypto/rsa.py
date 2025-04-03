@@ -1,5 +1,6 @@
 """Implementation of the RSAEncryptor class."""
 
+import asyncio
 from hashlib import sha256
 from typing import Optional
 
@@ -47,7 +48,7 @@ class RSAEncryptor:
         self.private_key = private_key
 
     @staticmethod
-    def keygen(
+    async def keygen(
         size: int = 2048, e: int = 65537
     ) -> tuple[tuple[bytes, bytes], tuple[bytes, bytes]]:
         """
@@ -64,8 +65,8 @@ class RSAEncryptor:
 
         """
         # generate two large prime numbers
-        p = getPrime(size)
-        q = getPrime(size)
+        p = await asyncio.to_thread(getPrime, size)
+        q = await asyncio.to_thread(getPrime, size)
 
         n = p * q
         phi = (p - 1) * (q - 1)
