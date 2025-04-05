@@ -16,6 +16,7 @@ python_installation = python.find_installation(
   required : true,
   modules : [
     'gi',  # PyGObject
+    'Crypto',  # pycryptodome
   ]
 )
 
@@ -37,3 +38,4 @@ install_data(sources, install_dir: main_moduledir)
 
 # Other meson.build sub files
 subdir('ui/')
+subdir('crypto/')
