@@ -85,12 +85,7 @@ pytest==8.3.5 \
     --hash=sha256:f4efe70cc14e511565ac476b57c279e12a855b11f48f212af1080ef2263d3845
     # via
     #   -r requirements/requirements-dev.in
-    #   pytest-asyncio
     #   pytest-dependency
-pytest-asyncio==0.26.0 \
-    --hash=sha256:7b51ed894f4fbea1340262bdae5135797ebbe21d8638978e35d31c6d19f72fb0 \
-    --hash=sha256:c4df2a697648241ff39e7f0e4a73050b03f123f760673956cf0d72a4990e312f
-    # via -r requirements/requirements-dev.in
 pytest-dependency==0.6.0 \
     --hash=sha256:934b0e6a39d95995062c193f7eaeed8a8ffa06ff1bcef4b62b0dc74a708bacc1
     # via -r requirements/requirements-dev.in
