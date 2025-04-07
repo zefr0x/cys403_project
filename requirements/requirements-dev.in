@@ -2,3 +2,4 @@ pytest
 pytest-dependency
 coverage
 PyGObject-stubs
+types-Pillow

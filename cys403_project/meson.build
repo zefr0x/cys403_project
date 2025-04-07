@@ -16,6 +16,7 @@ python_installation = python.find_installation(
   required : true,
   modules : [
     'gi',  # PyGObject
+    'PIL', # Pillow
     'Crypto',  # pycryptodome
   ]
 )

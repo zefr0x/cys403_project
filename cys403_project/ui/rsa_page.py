@@ -118,6 +118,8 @@ class RsaPage(Adw.Bin):
         """Create new key and show it in the ui."""
         self.sidebar_box.set_sensitive(False)
 
+        # TODO: Show spinner in the key bins.
+
         class KeyGen(multiprocessing.Process):
             def __init__(self, page: RsaPage) -> None:
                 """Initialize the process."""

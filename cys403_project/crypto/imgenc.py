@@ -19,6 +19,7 @@ class ImageEncryptor:
             key (bytes): The key for encryption and decryption.
 
         """
+        # TODO: Make the key size dynamic to accept any key size from the input dialog.
         self.key = key
 
     @staticmethod
@@ -32,6 +33,7 @@ class ImageEncryptor:
         """
         return token_bytes(16)
 
+    # TODO: Implement another cipher block mode.
     def encrypt(self, image: bytes) -> bytes:
         """
         Encrypt the image using a block cipher (CBC) algorithm.

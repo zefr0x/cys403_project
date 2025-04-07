@@ -17,6 +17,7 @@ from cys403_project.__about__ import (
     PROJECT_HOME_PAGE_URL,
 )
 
+from .image_page import ImagePage
 from .rsa_page import RsaPage
 
 gi.require_version("Adw", "1")
@@ -58,9 +59,16 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         view_switcher.set_stack(view_stack)
 
         rsa_page = RsaPage(self)
+        image_page = ImagePage(self)
 
         view_stack.add_titled_with_icon(
             rsa_page, "rsa", "RSA", "network-wireless-encrypted-symbolic"
+        )
+        view_stack.add_titled_with_icon(
+            image_page,
+            "image",
+            "Image Encryption",
+            "image-x-generic-symbolic",
         )
 
         # Window header
