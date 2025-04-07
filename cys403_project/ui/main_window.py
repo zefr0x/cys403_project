@@ -126,6 +126,8 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
             _("External Libraries"),
             [
                 "PyGobject https://gitlab.gnome.org/GNOME/pygobject",
+                "pycryptodome https://www.pycryptodome.org/",
+                "Pillow https://python-pillow.github.io/",
             ],
         )
 
