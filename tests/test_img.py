@@ -1,15 +1,6 @@
 """Tests for imgenc.py."""
 
-import pytest
-
-from cys403_project.crypto.imgenc import ImageEncryptor, SymmetricKeyError
-
-
-def test_nokey() -> None:
-    """Test encryption without a key."""
-    img = ImageEncryptor()
-    with pytest.raises(SymmetricKeyError, match="Key must be set before encryption."):
-        img.encrypt(b"Test image data")
+from cys403_project.crypto.imgenc import ImageEncryptor
 
 
 def test_encrypt_decrypt_perfect_blocks() -> None:

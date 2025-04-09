@@ -1,7 +1,6 @@
 """Image Encryption class."""
 
 from secrets import token_bytes
-from typing import Optional
 
 
 class SymmetricKeyError(Exception):
@@ -11,7 +10,7 @@ class SymmetricKeyError(Exception):
 class ImageEncryptor:
     """Image encryption and decryption class using a block cipher (CBC) algorithm."""
 
-    def __init__(self, key: Optional[bytes] = None) -> None:
+    def __init__(self, key: bytes) -> None:
         """
         Initialize the ImageEncryptor with a key.
 
@@ -19,8 +18,19 @@ class ImageEncryptor:
             key (bytes): The key for encryption and decryption.
 
         """
-        # TODO: Make the key size dynamic to accept any key size from the input dialog.
-        self.key = key
+        self.blocksize = len(key)
+        self._key = key
+
+    @property
+    def key(self) -> bytes:
+        """Get the key."""
+        return self._key
+
+    @key.setter
+    def key(self, key: bytes) -> None:
+        """Set the key."""
+        self.blocksize = len(key)
+        self._key = key
 
     @staticmethod
     def keygen(size: int = 16) -> bytes:
@@ -58,17 +68,18 @@ class ImageEncryptor:
             bytes: The encrypted image data.
 
         """
-        if not self.key:
+        if self.key is None:
             msg = "Key must be set before encryption."
             raise SymmetricKeyError(msg)
         # get blocksize
-        blocksize = len(self.key)
         # initalize IV
-        iv = token_bytes(blocksize)
+        iv = token_bytes(self.blocksize)
         # split image into blocks of blocksize
-        pad_length = blocksize - (len(image) % blocksize)
+        pad_length = self.blocksize - (len(image) % self.blocksize)
         image += bytes([pad_length] * pad_length)
-        blocks = [image[i : i + blocksize] for i in range(0, len(image), blocksize)]
+        blocks = [
+            image[i : i + self.blocksize] for i in range(0, len(image), self.blocksize)
+        ]
 
         # CBC encryption
         encrypted_blocks = []
@@ -99,13 +110,12 @@ class ImageEncryptor:
         if not self.key:
             msg = "Key must be set before decryption."
             raise SymmetricKeyError(msg)
-        blocksize = len(self.key)
-        iv = encrypted_image[:blocksize]
+        iv = encrypted_image[: self.blocksize]
 
-        # split image into blocks of 128 bits
+        # split image into blocks of blocksize
         blocks = [
-            encrypted_image[i : i + blocksize]
-            for i in range(blocksize, len(encrypted_image), blocksize)
+            encrypted_image[i : i + self.blocksize]
+            for i in range(self.blocksize, len(encrypted_image), self.blocksize)
         ]
         decrypted_blocks = []
 
