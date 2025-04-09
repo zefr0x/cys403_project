@@ -1,7 +1,6 @@
 """Image Encryption class."""
 
 from secrets import token_bytes
-from typing import Optional
 
 
 class SymmetricKeyError(Exception):
@@ -11,7 +10,7 @@ class SymmetricKeyError(Exception):
 class ImageEncryptor:
     """Image encryption and decryption class using a block cipher (CBC) algorithm."""
 
-    def __init__(self, key: Optional[bytes] = None) -> None:
+    def __init__(self, key: bytes) -> None:
         """
         Initialize the ImageEncryptor with a key.
 
@@ -19,19 +18,34 @@ class ImageEncryptor:
             key (bytes): The key for encryption and decryption.
 
         """
-        # TODO: Make the key size dynamic to accept any key size from the input dialog.
-        self.key = key
+        self.blocksize = len(key)
+        self._key = key
+
+    @property
+    def key(self) -> bytes:
+        """Get the key."""
+        return self._key
+
+    @key.setter
+    def key(self, key: bytes) -> None:
+        """Set the key."""
+        self.blocksize = len(key)
+        self._key = key
 
     @staticmethod
-    def keygen() -> bytes:
+    def keygen(size: int = 16) -> bytes:
         """
-        Generate a new 128 bit symmetric key.
+        Generate a new (size) byte symmetric key.
+
+        Args:
+            size (int): The size of the key to generate. (default: 16 bytes)
+
 
         Returns:
             bytes: The generated symmetric key.
 
         """
-        return token_bytes(16)
+        return token_bytes(size)
 
     # TODO: Implement another cipher block mode.
     def encrypt(self, image: bytes) -> bytes:
@@ -39,7 +53,7 @@ class ImageEncryptor:
         Encrypt the image using a block cipher (CBC) algorithm.
 
         The way this block cipher works is simple. We split the image into blocks of
-        128 bits. We then initialize a random initialization vector (IV)
+        len(key). We then initialize a random initialization vector (IV)
         and XOR it with the block. We then apply our encryption algorithm to the XOR'd
         block. We store the result and then use the result as the IV for the next block.
         The last block is padded with PKCS7 padding.
@@ -57,13 +71,15 @@ class ImageEncryptor:
         if self.key is None:
             msg = "Key must be set before encryption."
             raise SymmetricKeyError(msg)
-
+        # get blocksize
         # initalize IV
-        iv = token_bytes(16)
-        # split image into blocks of 128 bits
-        pad_length = 16 - (len(image) % 16)
+        iv = token_bytes(self.blocksize)
+        # split image into blocks of blocksize
+        pad_length = self.blocksize - (len(image) % self.blocksize)
         image += bytes([pad_length] * pad_length)
-        blocks = [image[i : i + 16] for i in range(0, len(image), 16)]
+        blocks = [
+            image[i : i + self.blocksize] for i in range(0, len(image), self.blocksize)
+        ]
 
         # CBC encryption
         encrypted_blocks = []
@@ -91,15 +107,15 @@ class ImageEncryptor:
             bytes: The decrypted image data.
 
         """
-        if self.key is None:
+        if not self.key:
             msg = "Key must be set before decryption."
             raise SymmetricKeyError(msg)
+        iv = encrypted_image[: self.blocksize]
 
-        iv = encrypted_image[:16]
-
-        # split image into blocks of 128 bits
+        # split image into blocks of blocksize
         blocks = [
-            encrypted_image[i : i + 16] for i in range(16, len(encrypted_image), 16)
+            encrypted_image[i : i + self.blocksize]
+            for i in range(self.blocksize, len(encrypted_image), self.blocksize)
         ]
         decrypted_blocks = []
 
