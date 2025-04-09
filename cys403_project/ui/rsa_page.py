@@ -17,6 +17,67 @@ from gi.repository import (  # noqa: E402
 )
 
 
+class KeyGenOptionsDialog(Adw.Dialog):
+    """Dialog for selecting key options."""
+
+    def __init__(self) -> None:
+        """Initialize the dialog."""
+        super().__init__(title=_("Key Generations Options"), hexpand=True)
+
+        layout = Adw.ToolbarView()
+        self.set_child(layout)
+
+        # Dialog Header
+        header = Adw.HeaderBar(
+            show_end_title_buttons=False, show_start_title_buttons=False
+        )
+        layout.add_top_bar(header)
+
+        cancel_button = Gtk.Button(label=_("Cancel"))
+        header.pack_start(cancel_button)
+        cancel_button.connect("clicked", lambda _: self.close())
+
+        self.generate_button = Gtk.Button(
+            label=_("Generate"), css_classes=("suggested-action",)
+        )
+        header.pack_end(self.generate_button)
+
+        # Dialog content
+        options_group = Adw.PreferencesGroup(
+            title=_("RSA Key Options"),
+            halign=Gtk.Align.FILL,
+            margin_start=24,
+            margin_end=24,
+            margin_bottom=24,
+            margin_top=12,
+        )
+        layout.set_content(options_group)
+
+        self._modulo_size = Adw.SpinRow.new_with_range(
+            min=1, max=18446744073709551616, step=1
+        )
+        self._modulo_size.set_title(_("Modulo Size"))
+        self._modulo_size.set_subtitle(_("Exponents of 2"))
+        self._modulo_size.set_value(2048)
+        options_group.add(self._modulo_size)
+
+        self._public_exponent = Adw.SpinRow.new_with_range(
+            min=1, max=18446744073709551616, step=1
+        )
+        self._public_exponent.set_title(_("Public Exponent"))
+        self._public_exponent.set_subtitle(_("Must be prime number"))
+        self._public_exponent.set_value(65537)
+        options_group.add(self._public_exponent)
+
+    def get_modulo_size(self) -> int:
+        """Get the key size from ui."""
+        return int(self._modulo_size.get_value())
+
+    def get_public_exponent(self) -> int:
+        """Get the public exponent from ui."""
+        return int(self._public_exponent.get_value())
+
+
 class RsaPage(Adw.Bin):
     """Page as interface to the RSA text encryption."""
 
@@ -39,7 +100,6 @@ class RsaPage(Adw.Bin):
         )
         split_view.set_sidebar(self.sidebar_box)
 
-        # TODO: Show dialog to configure generated key.
         key_gen_button = Gtk.Button(label=_("Generate New Key"))
         self.sidebar_box.append(key_gen_button)
         key_gen_button.connect("clicked", self._generate_new_key)
@@ -116,38 +176,26 @@ class RsaPage(Adw.Bin):
 
     def _generate_new_key(self, _button: Gtk.Button) -> None:
         """Create new key and show it in the ui."""
-        self.sidebar_box.set_sensitive(False)
+        options_dialog = KeyGenOptionsDialog()
 
-        # TODO: Show spinner in the key bins.
+        def on_generate_button_clicked(_button: Gtk.Button) -> None:
+            """Key generation handler."""
+            options_dialog.close()
+            # TODO: Show spinner in the key bins.
+            self.sidebar_box.set_sensitive(False)
 
-        class KeyGen(multiprocessing.Process):
-            def __init__(self, page: RsaPage) -> None:
-                """Initialize the process."""
-                super().__init__()
-                self.page = page
+            process = KeyGen(
+                self,
+                key_size=options_dialog.get_modulo_size(),
+                key_public_exponent=options_dialog.get_public_exponent(),
+            )
+            process.start()
 
-                self.parent_conn, self.child_conn = multiprocessing.Pipe()
+            GLib.timeout_add(100, process.check_for_result)
 
-            def run(self) -> None:
-                """CPU intensive task."""
-                key = RSAEncryptor.keygen()
-                self.child_conn.send(key)
-                self.child_conn.close()
+        options_dialog.generate_button.connect("clicked", on_generate_button_clicked)
 
-            def check_for_result(self) -> bool:
-                if self.parent_conn.poll():
-                    self.page.set_key(self.parent_conn.recv())
-
-                    self.page.sidebar_box.set_sensitive(True)
-
-                    process.join()
-                    return False
-                return True
-
-        process = KeyGen(self)
-        process.start()
-
-        GLib.timeout_add(100, process.check_for_result)
+        options_dialog.present(self._window)
 
     def set_key(self, key: tuple[tuple[bytes, bytes], tuple[bytes, bytes]]) -> None:
         """Set the key in the ui."""
@@ -228,3 +276,33 @@ class RsaPage(Adw.Bin):
             ct = encryptor.decrypt(b64decode(pt))
 
             self._output_text.get_buffer().set_text(ct.decode("utf-8"))
+
+
+class KeyGen(multiprocessing.Process):
+    """Key generation process."""
+
+    def __init__(self, page: RsaPage, key_size: int, key_public_exponent: int) -> None:
+        """Initialize the process."""
+        super().__init__()
+        self.page = page
+        self.key_size = key_size
+        self.public_exponent = key_public_exponent
+
+        self.parent_conn, self.child_conn = multiprocessing.Pipe()
+
+    def run(self) -> None:
+        """CPU intensive task."""
+        key = RSAEncryptor.keygen(self.key_size, self.public_exponent)
+        self.child_conn.send(key)
+        self.child_conn.close()
+
+    def check_for_result(self) -> bool:
+        """Check for results and finalize process."""
+        if self.parent_conn.poll():
+            self.page.set_key(self.parent_conn.recv())
+
+            self.page.sidebar_box.set_sensitive(True)
+
+            self.join()
+            return False
+        return True

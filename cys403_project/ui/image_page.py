@@ -59,6 +59,53 @@ class CipherImage:
         return CipherImage(width, height, data)
 
 
+class KeyGenOptionsDialog(Adw.Dialog):
+    """Dialog for selecting key generation options."""
+
+    def __init__(self) -> None:
+        """Initialize the dialog."""
+        super().__init__(title=_("Key Generations Options"), hexpand=True)
+
+        layout = Adw.ToolbarView()
+        self.set_child(layout)
+
+        # Dialog Header
+        header = Adw.HeaderBar(
+            show_end_title_buttons=False, show_start_title_buttons=False
+        )
+        layout.add_top_bar(header)
+
+        cancel_button = Gtk.Button(label=_("Cancel"))
+        header.pack_start(cancel_button)
+        cancel_button.connect("clicked", lambda _: self.close())
+
+        self.generate_button = Gtk.Button(
+            label=_("Generate"), css_classes=("suggested-action",)
+        )
+        header.pack_end(self.generate_button)
+
+        # Dialog content
+        options_group = Adw.PreferencesGroup(
+            title=_("Symmetric Key Options"),
+            halign=Gtk.Align.FILL,
+            margin_start=24,
+            margin_end=24,
+            margin_bottom=24,
+            margin_top=12,
+        )
+        layout.set_content(options_group)
+
+        self._key_size = Adw.SpinRow.new_with_range(min=1, max=255, step=1)
+        self._key_size.set_title(_("Key Size"))
+        self._key_size.set_subtitle(_("Number of Bytes"))
+        self._key_size.set_value(16)
+        options_group.add(self._key_size)
+
+    def get_key_size(self) -> int:
+        """Get the key size from ui."""
+        return int(self._key_size.get_value())
+
+
 class ImagePage(Adw.Bin):
     """Page as interface to the image encryption."""
 
@@ -85,7 +132,6 @@ class ImagePage(Adw.Bin):
             margin_bottom=7,
         )
 
-        # TODO: Show dialog to configure generated key.
         self._key_gen_button = Gtk.Button(label=_("Generate New Key"))
         self._sidebar_box.append(self._key_gen_button)
         self._key_gen_button.connect("clicked", self._generate_new_key)
@@ -160,13 +206,23 @@ class ImagePage(Adw.Bin):
 
     def _generate_new_key(self, _button: Gtk.Button) -> None:
         """Create new key and show it in the ui."""
-        self._sidebar_box.set_sensitive(False)
+        options_dialog = KeyGenOptionsDialog()
 
-        key = ImageEncryptor.keygen()
+        def on_generate_button_clicked(_button: Gtk.Button) -> None:
+            """Key generation handler."""
+            options_dialog.close()
 
-        self._private_key.get_buffer().set_text(b64encode(key).decode("ascii"))
+            self._sidebar_box.set_sensitive(False)
 
-        self._sidebar_box.set_sensitive(True)
+            key = ImageEncryptor.keygen(options_dialog.get_key_size())
+
+            self._private_key.get_buffer().set_text(b64encode(key).decode("ascii"))
+
+            self._sidebar_box.set_sensitive(True)
+
+        options_dialog.generate_button.connect("clicked", on_generate_button_clicked)
+
+        options_dialog.present(self._window)
 
     def get_private_key(self) -> bytes:
         """Get the private key from the ui."""
@@ -260,8 +316,11 @@ class ImagePage(Adw.Bin):
                 self._input_buffer_shape = cm.get_size()
 
                 pixbuf = bytes_to_pixbuf(
-                    # FIX: Avoid using 16 as fixed value.
-                    self.input_buffer[16 : cm.width * cm.height * 3 + 16],
+                    # TODO: Error and fill when smaller key size was used in encryption.
+                    self.input_buffer[
+                        len(self.get_private_key()) : cm.width * cm.height * 3
+                        + len(self.get_private_key())
+                    ],
                     cm.get_size(),
                 )
                 image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
@@ -374,7 +433,10 @@ class Encrypt(multiprocessing.Process):
             self.page.output_buffer = self.parent_conn.recv()
 
             pixbuf = bytes_to_pixbuf(
-                self.page.output_buffer[16 : len(self.page.input_buffer) + 16],
+                self.page.output_buffer[
+                    len(self.page.get_private_key()) : len(self.page.input_buffer)
+                    + len(self.page.get_private_key())
+                ],
                 self.page.output_buffer_shape,
             )
             image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
@@ -408,6 +470,7 @@ class Decrypt(multiprocessing.Process):
             self.page.output_buffer = self.parent_conn.recv()
 
             pixbuf = bytes_to_pixbuf(
+                # TODO: Error and fill when smaller key size was used in encryption.
                 self.page.output_buffer,
                 self.page.output_buffer_shape,
             )

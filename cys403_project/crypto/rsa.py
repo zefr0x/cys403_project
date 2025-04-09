@@ -69,6 +69,7 @@ class RSAEncryptor:
 
         n = p * q
         phi = (p - 1) * (q - 1)
+        # TODO: When this operation fail raise an error, since e is not a prime number.
         d = pow(e, -1, phi)
         public_key = (
             e.to_bytes((e.bit_length() + 7) // 8, "big"),
