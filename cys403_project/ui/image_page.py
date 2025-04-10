@@ -416,7 +416,7 @@ class Encrypt(multiprocessing.Process):
 
     def __init__(self, page: ImagePage) -> None:
         """Initialize the process."""
-        super().__init__()
+        super().__init__(daemon=True)
         self.page = page
 
         self.parent_conn, self.child_conn = multiprocessing.Pipe()
@@ -453,7 +453,7 @@ class Decrypt(multiprocessing.Process):
 
     def __init__(self, page: ImagePage) -> None:
         """Initialize the process."""
-        super().__init__()
+        super().__init__(daemon=True)
         self.page = page
 
         self.parent_conn, self.child_conn = multiprocessing.Pipe()

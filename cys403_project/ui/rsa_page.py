@@ -283,7 +283,7 @@ class KeyGen(multiprocessing.Process):
 
     def __init__(self, page: RsaPage, key_size: int, key_public_exponent: int) -> None:
         """Initialize the process."""
-        super().__init__()
+        super().__init__(daemon=True)
         self.page = page
         self.key_size = key_size
         self.public_exponent = key_public_exponent
