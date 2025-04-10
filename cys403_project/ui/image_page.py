@@ -140,7 +140,7 @@ class ImagePage(Adw.Bin):
         self._private_key = Gtk.TextView(wrap_mode=Gtk.WrapMode.CHAR, vexpand=True)
         self._sidebar_box.append(
             Gtk.Frame(
-                child=self._private_key,
+                child=Gtk.ScrolledWindow(child=self._private_key),
                 label_widget=Gtk.Label(use_markup=True, label=_("<b>Private Key</b>")),
             )
         )

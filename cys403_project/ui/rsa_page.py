@@ -106,17 +106,21 @@ class RsaPage(Adw.Bin):
         key_gen_button.connect("clicked", self._generate_new_key)
 
         self._modulo = Gtk.TextView(wrap_mode=Gtk.WrapMode.CHAR, vexpand=True)
+        self._modulo_scrollable = Gtk.ScrolledWindow(child=self._modulo)
         self.sidebar_box.append(
             Gtk.Frame(
-                child=self._modulo,
+                child=self._modulo_scrollable,
                 label_widget=Gtk.Label(use_markup=True, label=_("<b>Modulo</b>")),
             )
         )
 
         self._public_exponent = Gtk.TextView(wrap_mode=Gtk.WrapMode.CHAR, vexpand=True)
+        self._public_exponent_scrollable = Gtk.ScrolledWindow(
+            child=self._public_exponent
+        )
         self.sidebar_box.append(
             Gtk.Frame(
-                child=self._public_exponent,
+                child=self._public_exponent_scrollable,
                 label_widget=Gtk.Label(
                     use_markup=True, label=_("<b>Public Exponent</b>")
                 ),
@@ -124,9 +128,12 @@ class RsaPage(Adw.Bin):
         )
 
         self._private_exponent = Gtk.TextView(wrap_mode=Gtk.WrapMode.CHAR, vexpand=True)
+        self._private_exponent_scrollable = Gtk.ScrolledWindow(
+            child=self._private_exponent
+        )
         self.sidebar_box.append(
             Gtk.Frame(
-                child=self._private_exponent,
+                child=self._private_exponent_scrollable,
                 label_widget=Gtk.Label(
                     use_markup=True, label=_("<b>Private Exponent</b>")
                 ),
@@ -146,7 +153,7 @@ class RsaPage(Adw.Bin):
         self._input_text = Gtk.TextView(wrap_mode=Gtk.WrapMode.CHAR, vexpand=True)
         content_box.append(
             Gtk.Frame(
-                child=self._input_text,
+                child=Gtk.ScrolledWindow(child=self._input_text),
                 label_widget=Gtk.Label(use_markup=True, label=_("<b>Input</b>")),
             )
         )
@@ -168,7 +175,7 @@ class RsaPage(Adw.Bin):
         self._output_text = Gtk.TextView(wrap_mode=Gtk.WrapMode.CHAR, vexpand=True)
         content_box.append(
             Gtk.Frame(
-                child=self._output_text,
+                child=Gtk.ScrolledWindow(child=self._output_text),
                 label_widget=Gtk.Label(use_markup=True, label=_("<b>Output</b>")),
             )
         )
