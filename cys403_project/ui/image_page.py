@@ -5,11 +5,15 @@ from base64 import b64decode, b64encode
 from enum import Enum
 from gettext import gettext as _
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import gi
 from PIL import Image
 
 from cys403_project.crypto.imgenc import ImageEncryptor
+
+if TYPE_CHECKING:
+    from cys403_project.ui.main_window import Cys403ProjectMainWindow
 
 gi.require_version("Adw", "1")
 gi.require_version("Gtk", "4.0")
@@ -109,7 +113,7 @@ class KeyGenOptionsDialog(Adw.Dialog):
 class ImagePage(Adw.Bin):
     """Page as interface to the image encryption."""
 
-    def __init__(self, window: Adw.ApplicationWindow) -> None:
+    def __init__(self, window: "Cys403ProjectMainWindow") -> None:
         """Initialize the page."""
         super().__init__()
         self._window = window
@@ -192,7 +196,9 @@ class ImagePage(Adw.Bin):
         self.output_bin = Adw.Bin(vexpand=True)
         output_file_box.append(self.output_bin)
 
-        self._save_output_button = Gtk.Button(label=_("Save Image File"))
+        self._save_output_button = Gtk.Button(
+            label=_("Save Image File"), sensitive=False
+        )
         output_file_box.append(self._save_output_button)
         self._save_output_button.connect("clicked", self._select_output)
 
@@ -253,6 +259,7 @@ class ImagePage(Adw.Bin):
 
         filter_image = Gtk.FileFilter()
         filter_image.set_name("Cipher Image Files")
+        # TODO: Create a custom mime type for cipher images.
         filter_image.add_pattern("*.cipher_image")
         dialog.add_filter(filter_image)
 
@@ -283,14 +290,19 @@ class ImagePage(Adw.Bin):
         dialog.add_button(_("_Cancel"), Gtk.ResponseType.CANCEL)
         dialog.add_button(_("_Save"), Gtk.ResponseType.APPLY)
 
-        if self._output_mode == BinMode.CIPHER_IMAGE:
-            dialog.set_current_name("output.cipher_image")
-        elif self._output_mode == BinMode.PLAIN_IMAGE:
-            dialog.set_current_name("output.png")
+        if hasattr(self, "_output_mode"):
+            if self._output_mode == BinMode.CIPHER_IMAGE:
+                dialog.set_current_name("output.cipher_image")
+            elif self._output_mode == BinMode.PLAIN_IMAGE:
+                dialog.set_current_name("output.png")
 
-        dialog.connect("response", self._on_file_save_response)
+            dialog.connect("response", self._on_file_save_response)
 
-        dialog.show()
+            dialog.show()
+        else:
+            self._window.show_error(
+                _("Output has not been determined, there is noting to be saved.")
+            )
 
     def _on_file_save_response(
         self, dialog: Gtk.FileChooserDialog, response_id: Gtk.ResponseType
@@ -316,19 +328,31 @@ class ImagePage(Adw.Bin):
                 self.input_buffer = cm.data
                 self._input_buffer_shape = cm.get_size()
 
-                pixbuf = bytes_to_pixbuf(
-                    # TODO: Error and fill when smaller key size was used in encryption.
-                    self.input_buffer[
-                        len(self.get_private_key()) : cm.width * cm.height * 3
-                        + len(self.get_private_key())
-                    ],
-                    cm.get_size(),
-                )
-                image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
-                self._input_bin.set_child(image_widget)
+                display_buffer = self.input_buffer[
+                    len(self.get_private_key()) : cm.width * cm.height * 3
+                    + len(self.get_private_key())
+                ]
 
-                self._encrypt_button.set_sensitive(False)
-                self._decrypt_button.set_sensitive(True)
+                if len(display_buffer) == cm.width * cm.height * 3:
+                    pixbuf = bytes_to_pixbuf(
+                        display_buffer,
+                        cm.get_size(),
+                    )
+                    image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
+                    self._input_bin.set_child(image_widget)
+
+                    self._encrypt_button.set_sensitive(False)
+                    self._decrypt_button.set_sensitive(True)
+                else:
+                    # When the image was encrypted using smaller key.
+                    self._window.show_error(
+                        _("Failed to open and display image, key size doesn't match.")
+                    )
+
+                    # TODO: Show corrupted image icon.
+                    self._input_bin.set_child(
+                        Adw.StatusPage(title=_("Corrupted Input"))
+                    )
             else:
                 pm = Image.open(path).convert("RGB")  # Force RGB format
 
@@ -362,54 +386,70 @@ class ImagePage(Adw.Bin):
                     )
                     pm.save(path)
             else:
-                # TODO: Show error when output is empty.
-                pass
+                self._window.show_error(
+                    _("Output bufer is empty, there is noting to be save.")
+                )
 
     def _encrypt(self, _button: Gtk.Button) -> None:
         """Encrypt the input image using the key."""
-        # TODO: Check that key is not empty.
+        if self.get_private_key():
+            if hasattr(self, "input_buffer"):
+                self._output_mode = BinMode.CIPHER_IMAGE
+                self.output_buffer_shape = self._input_buffer_shape
+                self.output_bin.set_child(Adw.Spinner())  # type: ignore[attr-defined]
+                self.set_buttons_sensitivity(False)
+                self._save_output_button.set_sensitive(False)
 
-        if hasattr(self, "input_buffer"):
-            self._output_mode = BinMode.CIPHER_IMAGE
-            self.output_buffer_shape = self._input_buffer_shape
-            self.output_bin.set_child(Adw.Spinner())  # type: ignore[attr-defined]
-            self.set_buttons_sensitivity(False)
-
-            process = Encrypt(self)
-            process.start()
-            GLib.timeout_add(100, process.check_for_result)
+                process = Encrypt(self)
+                process.start()
+                GLib.timeout_add(100, process.check_for_result)
+            else:
+                self._window.show_error(
+                    _("Input buffer is empty, there is noting to be encrypted.")
+                )
         else:
-            # TODO: Show error when input is empty.
-            pass
+            self._window.show_error(_("Private key is empty, can't encrypt."))
 
     def _decrypt(self, _button: Gtk.Button) -> None:
         """Decrypt the input image using the key."""
-        # TODO: Check that key is not empty.
+        if self.get_private_key():
+            if hasattr(self, "input_buffer"):
+                self._output_mode = BinMode.PLAIN_IMAGE
+                self.output_buffer_shape = self._input_buffer_shape
+                self.output_bin.set_child(Adw.Spinner(vexpand=True))  # type: ignore[attr-defined]
+                self.set_buttons_sensitivity(False)
+                self._save_output_button.set_sensitive(False)
 
-        if hasattr(self, "input_buffer"):
-            self._output_mode = BinMode.PLAIN_IMAGE
-            self.output_buffer_shape = self._input_buffer_shape
-            self.output_bin.set_child(Adw.Spinner(vexpand=True))  # type: ignore[attr-defined]
-            self.set_buttons_sensitivity(False)
+                process = Decrypt(self)
+                process.start()
+                GLib.timeout_add(100, process.check_for_result)
 
-            process = Decrypt(self)
-            process.start()
-            GLib.timeout_add(100, process.check_for_result)
-
+            else:
+                self._window.show_error(
+                    _("Input buffer is empty, there is noting to be decrypted.")
+                )
         else:
-            # TODO: Show error when input is empty.
-            pass
+            self._window.show_error(_("Private key is empty, can't decrypt."))
 
     def set_buttons_sensitivity(self, value: bool) -> None:  # noqa: FBT001
         """Set buttons sinsitivity, and show a spinner in the output bin."""
         self._key_gen_button.set_sensitive(value)
         self._open_input_button.set_sensitive(value)
-        self._save_output_button.set_sensitive(value)
 
         if self._input_mode == BinMode.PLAIN_IMAGE:
             self._encrypt_button.set_sensitive(value)
         elif self._input_mode == BinMode.CIPHER_IMAGE:
             self._decrypt_button.set_sensitive(value)
+
+    @property
+    def window(self) -> "Cys403ProjectMainWindow":
+        """Get the parent window."""
+        return self._window
+
+    @property
+    def save_output_button(self) -> Gtk.Button:
+        """Get the save output button."""
+        return self._save_output_button
 
 
 class Encrypt(multiprocessing.Process):
@@ -443,6 +483,7 @@ class Encrypt(multiprocessing.Process):
             image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
             self.page.output_bin.set_child(image_widget)
             self.page.set_buttons_sensitivity(True)
+            self.page.save_output_button.set_sensitive(True)
 
             self.join()
             return False
@@ -470,13 +511,28 @@ class Decrypt(multiprocessing.Process):
         if self.parent_conn.poll():
             self.page.output_buffer = self.parent_conn.recv()
 
-            pixbuf = bytes_to_pixbuf(
-                # TODO: Error and fill when smaller key size was used in encryption.
-                self.page.output_buffer,
-                self.page.output_buffer_shape,
-            )
-            image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
-            self.page.output_bin.set_child(image_widget)
+            if (
+                len(self.page.output_buffer)
+                == self.page.output_buffer_shape[0]
+                * self.page.output_buffer_shape[1]
+                * 3
+            ):
+                pixbuf = bytes_to_pixbuf(
+                    self.page.output_buffer,
+                    self.page.output_buffer_shape,
+                )
+                image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
+                self.page.output_bin.set_child(image_widget)
+
+                self.page.save_output_button.set_sensitive(True)
+            else:
+                # When the image was encrypted using smaller key.
+                self.page.window.show_error(
+                    _("Failed to decrypt and display image, key size doesn't match.")
+                )
+
+            # TODO: Show corrupted image icon.
+            self.page.output_bin.set_child(Adw.StatusPage(title=_("Corrupted Output")))
             self.page.set_buttons_sensitivity(True)
 
             self.join()

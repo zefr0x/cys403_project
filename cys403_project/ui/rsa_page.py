@@ -3,10 +3,19 @@
 import multiprocessing
 from base64 import b64decode, b64encode
 from gettext import gettext as _
+from typing import TYPE_CHECKING
 
 import gi
 
-from cys403_project.crypto.rsa import MessageTooLongError, RSAEncryptor
+from cys403_project.crypto.rsa import (
+    MessageTooLongError,
+    NonPrimeExponentError,
+    PadError,
+    RSAEncryptor,
+)
+
+if TYPE_CHECKING:
+    from cys403_project.ui.main_window import Cys403ProjectMainWindow
 
 gi.require_version("Adw", "1")
 gi.require_version("Gtk", "4.0")
@@ -81,7 +90,7 @@ class KeyGenOptionsDialog(Adw.Dialog):
 class RsaPage(Adw.Bin):
     """Page as interface to the RSA text encryption."""
 
-    def __init__(self, window: Adw.ApplicationWindow) -> None:
+    def __init__(self, window: "Cys403ProjectMainWindow") -> None:
         """Initialize the page."""
         super().__init__()
         self._window = window
@@ -257,8 +266,7 @@ class RsaPage(Adw.Bin):
         n = self.get_modulo()
 
         if e == b"" or n == b"":
-            # TODO: Show error message.
-            pass
+            self._window.show_error(_("public key is empty, can't encrypt."))
         else:
             encryptor = RSAEncryptor(public_key=(e, n))
 
@@ -273,8 +281,9 @@ class RsaPage(Adw.Bin):
 
                 self._output_text.get_buffer().set_text(b64encode(ct).decode("ascii"))
             except MessageTooLongError as e:
-                # TODO: Handle error.
-                pass
+                self._window.show_error(
+                    _("message is longer than modulo, failed to encrypt.")
+                )
 
     def _decrypt(self, _button: Gtk.Button) -> None:
         """Decrypt the input using the key."""
@@ -282,8 +291,7 @@ class RsaPage(Adw.Bin):
         n = self.get_modulo()
 
         if d == b"" or n == b"":
-            # TODO: Show error message.
-            pass
+            self._window.show_error(_("private key is empty, can't decrypt."))
         else:
             encryptor = RSAEncryptor(private_key=(d, n))
 
@@ -293,9 +301,19 @@ class RsaPage(Adw.Bin):
 
             pt = buf.get_text(start_iter, end_iter, include_hidden_chars=False).encode()
 
-            ct = encryptor.decrypt(b64decode(pt))
+            try:
+                ct = encryptor.decrypt(b64decode(pt))
 
-            self._output_text.get_buffer().set_text(ct.decode("utf-8"))
+                self._output_text.get_buffer().set_text(ct.decode("utf-8"))
+            except PadError:
+                self._window.show_error(
+                    _("Invalid padding in decrypted message, failed to decrypt.")
+                )
+
+    @property
+    def window(self) -> "Cys403ProjectMainWindow":
+        """Get the parent window."""
+        return self._window
 
 
 class KeyGen(multiprocessing.Process):
@@ -312,14 +330,24 @@ class KeyGen(multiprocessing.Process):
 
     def run(self) -> None:
         """CPU intensive task."""
-        key = RSAEncryptor.keygen(self.key_size, self.public_exponent)
-        self.child_conn.send(key)
-        self.child_conn.close()
+        try:
+            key = RSAEncryptor.keygen(self.key_size, self.public_exponent)
+            self.child_conn.send(key)
+        except NonPrimeExponentError:
+            self.child_conn.send(None)
+        finally:
+            self.child_conn.close()
 
     def check_for_result(self) -> bool:
         """Check for results and finalize process."""
         if self.parent_conn.poll():
-            self.page.set_key(self.parent_conn.recv())
+            key = self.parent_conn.recv()
+            if key:
+                self.page.set_key(key)
+            else:
+                self.page.window.show_error(
+                    _("Public exponent is not prime number, failed to generate a key.")
+                )
 
             self.page.set_keygen_loading(False)
 

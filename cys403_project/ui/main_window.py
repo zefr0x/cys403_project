@@ -126,6 +126,17 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         """
         # TODO: Implement opening files from CLI.
 
+    def show_error(self, msg: str) -> None:
+        """Display an error toast."""
+        self._overlay.dismiss_all()  # type: ignore[attr-defined]
+        self._overlay.add_toast(
+            Adw.Toast(
+                # TODO: Improve error messages style and colouring.
+                title="<b><span foreground='red'>Error:</span></b> " + msg,
+                use_markup=True,
+            )
+        )
+
     def __show_about_dialog(self, _button: Gtk.Button) -> None:
         """Present the app's about dialog."""
         about_window = Adw.AboutDialog(

@@ -22,6 +22,10 @@ class MessageTooLongError(Exception):
     """Exception for message longer than modulus errors."""
 
 
+class NonPrimeExponentError(Exception):
+    """Exception for using composit number as a public exponent."""
+
+
 class RSAEncryptor:
     """
     A class to handle RSA encryption and decryption.
@@ -69,8 +73,13 @@ class RSAEncryptor:
 
         n = p * q
         phi = (p - 1) * (q - 1)
-        # TODO: When this operation fail raise an error, since e is not a prime number.
-        d = pow(e, -1, phi)
+
+        try:
+            d = pow(e, -1, phi)
+        except ValueError as err:
+            # When e is not a prime number.
+            raise NonPrimeExponentError from err
+
         public_key = (
             e.to_bytes((e.bit_length() + 7) // 8, "big"),
             n.to_bytes((n.bit_length() + 7) // 8, "big"),
