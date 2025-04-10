@@ -42,20 +42,27 @@ select = [
   "ARG",
   "PTH",
   "TD",
+  "TC",
   "FIX",
   "ERA",
   "PGH",
+  "PL",
   "TRY",
   "FLY",
   "PERF",
   "FURB",
   "LOG",
   "RUF",
+  # "AIR",
+  # "FAST",
+  # "DJ"
+  # "NPY",
+  # "PD",
 ]
 
 ignore = ["D203", "D212", "COM812", "ISC001", "TD002", "TD003", "FIX"]
 
-extend-per-file-ignores."test_*" = ["S101", "S311", "INP001"]
+extend-per-file-ignores."test_*" = ["S101", "S311", "INP001", "PLR2004"]
 extend-per-file-ignores."cys403_project/__main__.py" = ["EXE001", "EXE003"]
 
 task-tags = ["FIX", "TODO", "HACK", "WARN", "PERF", "NOTE"]
