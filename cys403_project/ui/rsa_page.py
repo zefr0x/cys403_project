@@ -86,8 +86,8 @@ class RsaPage(Adw.Bin):
         super().__init__()
         self._window = window
 
-        split_view = Adw.OverlaySplitView()
-        self.set_child(split_view)
+        self.split_view = Adw.OverlaySplitView()
+        self.set_child(self.split_view)
 
         # Sidebar
         self.sidebar_box = Gtk.Box(
@@ -98,7 +98,8 @@ class RsaPage(Adw.Bin):
             margin_top=7,
             margin_bottom=7,
         )
-        split_view.set_sidebar(self.sidebar_box)
+        self.split_view.set_sidebar(self.sidebar_box)
+        self.sidebar_box.set_size_request(250, 0)
 
         key_gen_button = Gtk.Button(label=_("Generate New Key"))
         self.sidebar_box.append(key_gen_button)
@@ -172,7 +173,7 @@ class RsaPage(Adw.Bin):
             )
         )
 
-        split_view.set_content(content_box)
+        self.split_view.set_content(content_box)
 
     def _generate_new_key(self, _button: Gtk.Button) -> None:
         """Create new key and show it in the ui."""

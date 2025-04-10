@@ -119,8 +119,8 @@ class ImagePage(Adw.Bin):
         self.output_buffer: bytes
         self.output_buffer_shape: tuple[int, int]
 
-        split_view = Adw.OverlaySplitView()
-        self.set_child(split_view)
+        self.split_view = Adw.OverlaySplitView()
+        self.set_child(self.split_view)
 
         # Sidebar
         self._sidebar_box = Gtk.Box(
@@ -131,6 +131,7 @@ class ImagePage(Adw.Bin):
             margin_top=7,
             margin_bottom=7,
         )
+        self._sidebar_box.set_size_request(250, 0)
 
         self._key_gen_button = Gtk.Button(label=_("Generate New Key"))
         self._sidebar_box.append(self._key_gen_button)
@@ -144,7 +145,7 @@ class ImagePage(Adw.Bin):
             )
         )
 
-        split_view.set_sidebar(self._sidebar_box)
+        self.split_view.set_sidebar(self._sidebar_box)
 
         # Content
         content_box = Gtk.Box(
@@ -202,7 +203,7 @@ class ImagePage(Adw.Bin):
             )
         )
 
-        split_view.set_content(content_box)
+        self.split_view.set_content(content_box)
 
     def _generate_new_key(self, _button: Gtk.Button) -> None:
         """Create new key and show it in the ui."""

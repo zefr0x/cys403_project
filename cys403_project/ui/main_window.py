@@ -39,9 +39,8 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         super().__init__(
             application=application,
             title=_("cys403_project"),
-            default_width=500,
-            default_height=800,
         )
+        self.set_size_request(500, 800)
 
         if BUILD_PROFILE == "development":
             self.add_css_class("devel")
@@ -58,16 +57,16 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         view_stack = Adw.ViewStack()
         view_switcher.set_stack(view_stack)
 
-        rsa_page = RsaPage(self)
-        image_page = ImagePage(self)
+        self._rsa_page = RsaPage(self)
+        self._image_page = ImagePage(self)
 
         view_stack.add_titled_with_icon(
-            rsa_page, "rsa", "RSA", "network-wireless-encrypted-symbolic"
+            self._rsa_page, "rsa", "RSA", "network-wireless-encrypted-symbolic"
         )
         view_stack.add_titled_with_icon(
-            image_page,
+            self._image_page,
             "image",
-            "Image Encryption",
+            "Image",
             "image-x-generic-symbolic",
         )
 
@@ -86,6 +85,15 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
 
         main_layout.add_bottom_bar(view_switcher_bar)
 
+        # BreakPoint
+        break_point = Adw.Breakpoint(
+            condition=Adw.breakpoint_condition_parse("max-width: 700px")
+        )
+        self.add_breakpoint(break_point)
+        break_point.add_setter(self._sidebar_toggle_button, "visible", value=True)
+        break_point.add_setter(self._rsa_page.split_view, "collapsed", value=True)
+        break_point.add_setter(self._image_page.split_view, "collapsed", value=True)
+
     def __build_header(self) -> Adw.HeaderBar:
         """Create the header bar for the application."""
         header = Adw.HeaderBar()
@@ -95,7 +103,20 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         header.pack_end(about_button)
         about_button.connect("clicked", self.__show_about_dialog)
 
+        self._sidebar_toggle_button = Gtk.ToggleButton(
+            icon_name="sidebar-show-symbolic", visible=False
+        )
+        header.pack_start(self._sidebar_toggle_button)
+
+        self._sidebar_toggle_button.connect(
+            "toggled", self._on_sidebar_toggle_button_toggled
+        )
         return header
+
+    def _on_sidebar_toggle_button_toggled(self, button: Gtk.ToggleButton) -> None:
+        """Hnalde sidebar button toggled."""
+        self._rsa_page.split_view.set_show_sidebar(button.props.active)
+        self._image_page.split_view.set_show_sidebar(button.props.active)
 
     def open_files(self, files: Sequence[Gio.File]) -> None:
         """
