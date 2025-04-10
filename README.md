@@ -1,8 +1,9 @@
 > [!WARNING]
 > This repository/project is a university project created solely to satisfy
 > course requirements. It neither had security auditing nor intended to be
-> secure and is not maintained. If you are interested in the project, it's free
-> software under the GPL-3.0 license.
+> secure and neither had high quality standards nor intended to be maintained or
+> used in any production environment. If you are (for whatever reason)
+> interested in this project, it's free software under the GPL-3.0 license.
 
 <div align = center>
 
