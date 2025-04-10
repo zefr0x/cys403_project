@@ -1,6 +1,6 @@
 """The crypto implementation part of the application."""
 
-from .imgenc import ImageEncryptor, SymmetricKeyError
+from .imgenc import ImageEncryptor
 from .rsa import (
     MessageTooLongError,
     PadError,
@@ -16,5 +16,4 @@ __all__ = [
     "PrivateKeyError",
     "PublicKeyError",
     "RSAEncryptor",
-    "SymmetricKeyError",
 ]

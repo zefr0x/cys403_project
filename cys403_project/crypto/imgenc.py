@@ -3,10 +3,6 @@
 from secrets import token_bytes
 
 
-class SymmetricKeyError(Exception):
-    """Exception for missing symmetric key errors."""
-
-
 class ImageEncryptor:
     """Image encryption and decryption class using a block cipher (CBC) algorithm."""
 
@@ -25,12 +21,6 @@ class ImageEncryptor:
     def key(self) -> bytes:
         """Get the key."""
         return self._key
-
-    @key.setter
-    def key(self, key: bytes) -> None:
-        """Set the key."""
-        self.blocksize = len(key)
-        self._key = key
 
     @staticmethod
     def keygen(size: int = 16) -> bytes:
@@ -68,10 +58,6 @@ class ImageEncryptor:
             bytes: The encrypted image data.
 
         """
-        if self.key is None:
-            msg = "Key must be set before encryption."
-            raise SymmetricKeyError(msg)
-        # get blocksize
         # initalize IV
         iv = token_bytes(self.blocksize)
         # split image into blocks of blocksize
@@ -107,9 +93,6 @@ class ImageEncryptor:
             bytes: The decrypted image data.
 
         """
-        if not self.key:
-            msg = "Key must be set before decryption."
-            raise SymmetricKeyError(msg)
         iv = encrypted_image[: self.blocksize]
 
         # split image into blocks of blocksize
