@@ -90,7 +90,7 @@ class RsaPage(Adw.Bin):
         self.set_child(self.split_view)
 
         # Sidebar
-        self.sidebar_box = Gtk.Box(
+        sidebar_box = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL,
             spacing=13,
             margin_start=7,
@@ -98,16 +98,16 @@ class RsaPage(Adw.Bin):
             margin_top=7,
             margin_bottom=7,
         )
-        self.split_view.set_sidebar(self.sidebar_box)
-        self.sidebar_box.set_size_request(250, 0)
+        self.split_view.set_sidebar(sidebar_box)
+        sidebar_box.set_size_request(250, 0)
 
-        key_gen_button = Gtk.Button(label=_("Generate New Key"))
-        self.sidebar_box.append(key_gen_button)
-        key_gen_button.connect("clicked", self._generate_new_key)
+        self._key_gen_button = Gtk.Button(label=_("Generate New Key"))
+        sidebar_box.append(self._key_gen_button)
+        self._key_gen_button.connect("clicked", self._generate_new_key)
 
         self._modulo = Gtk.TextView(wrap_mode=Gtk.WrapMode.CHAR, vexpand=True)
         self._modulo_scrollable = Gtk.ScrolledWindow(child=self._modulo)
-        self.sidebar_box.append(
+        sidebar_box.append(
             Gtk.Frame(
                 child=self._modulo_scrollable,
                 label_widget=Gtk.Label(use_markup=True, label=_("<b>Modulo</b>")),
@@ -118,7 +118,7 @@ class RsaPage(Adw.Bin):
         self._public_exponent_scrollable = Gtk.ScrolledWindow(
             child=self._public_exponent
         )
-        self.sidebar_box.append(
+        sidebar_box.append(
             Gtk.Frame(
                 child=self._public_exponent_scrollable,
                 label_widget=Gtk.Label(
@@ -131,7 +131,7 @@ class RsaPage(Adw.Bin):
         self._private_exponent_scrollable = Gtk.ScrolledWindow(
             child=self._private_exponent
         )
-        self.sidebar_box.append(
+        sidebar_box.append(
             Gtk.Frame(
                 child=self._private_exponent_scrollable,
                 label_widget=Gtk.Label(
@@ -189,8 +189,7 @@ class RsaPage(Adw.Bin):
         def on_generate_button_clicked(_button: Gtk.Button) -> None:
             """Key generation handler."""
             options_dialog.close()
-            # TODO: Show spinner in the key bins.
-            self.sidebar_box.set_sensitive(False)
+            self.set_keygen_loading(True)
 
             process = KeyGen(
                 self,
@@ -204,6 +203,19 @@ class RsaPage(Adw.Bin):
         options_dialog.generate_button.connect("clicked", on_generate_button_clicked)
 
         options_dialog.present(self._window)
+
+    def set_keygen_loading(self, value: bool) -> None:  # noqa: FBT001
+        """Disable or enable key gen button and show spinners in sidebar."""
+        self._key_gen_button.set_sensitive(not value)
+
+        if value:
+            self._modulo_scrollable.set_child(Adw.Spinner(vexpand=True))  # type: ignore[attr-defined]
+            self._public_exponent_scrollable.set_child(Adw.Spinner(vexpand=True))  # type: ignore[attr-defined]
+            self._private_exponent_scrollable.set_child(Adw.Spinner(vexpand=True))  # type: ignore[attr-defined]
+        else:
+            self._modulo_scrollable.set_child(self._modulo)
+            self._public_exponent_scrollable.set_child(self._public_exponent)
+            self._private_exponent_scrollable.set_child(self._private_exponent)
 
     def set_key(self, key: tuple[tuple[bytes, bytes], tuple[bytes, bytes]]) -> None:
         """Set the key in the ui."""
@@ -309,7 +321,7 @@ class KeyGen(multiprocessing.Process):
         if self.parent_conn.poll():
             self.page.set_key(self.parent_conn.recv())
 
-            self.page.sidebar_box.set_sensitive(True)
+            self.page.set_keygen_loading(False)
 
             self.join()
             return False
