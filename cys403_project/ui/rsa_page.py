@@ -242,6 +242,7 @@ class RsaPage(Adw.Bin):
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
+        # TODO: Show error when failed to parse.
         return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
 
     def get_private_exponent(self) -> bytes:
@@ -250,6 +251,7 @@ class RsaPage(Adw.Bin):
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
+        # TODO: Show error when failed to parse.
         return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
 
     def get_modulo(self) -> bytes:
@@ -258,6 +260,7 @@ class RsaPage(Adw.Bin):
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
+        # TODO: Show error when failed to parse.
         return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
 
     def _encrypt(self, _button: Gtk.Button) -> None:
@@ -302,6 +305,7 @@ class RsaPage(Adw.Bin):
             pt = buf.get_text(start_iter, end_iter, include_hidden_chars=False).encode()
 
             try:
+                # TODO: Show error when failed to parse.
                 ct = encryptor.decrypt(b64decode(pt))
 
                 self._output_text.get_buffer().set_text(ct.decode("utf-8"))

@@ -237,6 +237,7 @@ class ImagePage(Adw.Bin):
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
+        # TODO: Show error when failed to parse.
         return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
 
     def _select_input(self, _button: Gtk.Button) -> None:
@@ -530,9 +531,11 @@ class Decrypt(multiprocessing.Process):
                 self.page.window.show_error(
                     _("Failed to decrypt and display image, key size doesn't match.")
                 )
+                # TODO: Show corrupted image icon.
+                self.page.output_bin.set_child(
+                    Adw.StatusPage(title=_("Corrupted Output"))
+                )
 
-            # TODO: Show corrupted image icon.
-            self.page.output_bin.set_child(Adw.StatusPage(title=_("Corrupted Output")))
             self.page.set_buttons_sensitivity(True)
 
             self.join()
