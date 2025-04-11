@@ -1,5 +1,6 @@
 i18n = import('i18n')
 
+# FIX: Change application name and id when in development build.
 # Desktop file
 desktop_file = i18n.merge_file(
   input: '@0@.desktop.in'.format(BASE_ID),

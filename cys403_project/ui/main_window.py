@@ -166,4 +166,11 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
             ],
         )
 
+        about_window.add_acknowledgement_section(
+            _("Application Icon"),
+            [
+                "Paomedia https://www.iconfinder.com/icons/299105/lock_icon",
+            ],
+        )
+
         about_window.present(self)

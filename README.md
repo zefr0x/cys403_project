@@ -7,6 +7,8 @@
 
 <div align = center>
 
+![Logo](data/icons/io.github.zefr0x.cys403_project.svg)
+
 <h1>CYS-403 Project</h1>
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/zefr0x/cys403_project/main.svg)](https://results.pre-commit.ci/latest/github/zefr0x/cys403_project/main)
