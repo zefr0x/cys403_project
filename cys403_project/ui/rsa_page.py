@@ -31,7 +31,7 @@ class KeyGenOptionsDialog(Adw.Dialog):
 
     def __init__(self) -> None:
         """Initialize the dialog."""
-        super().__init__(title=_("Key Generations Options"), hexpand=True)
+        super().__init__(title=_("Key Generation Options"), hexpand=True)
 
         layout = Adw.ToolbarView()
         self.set_child(layout)
@@ -269,7 +269,7 @@ class RsaPage(Adw.Bin):
         n = self.get_modulo()
 
         if e == b"" or n == b"":
-            self._window.show_error(_("public key is empty, can't encrypt."))
+            self._window.show_error(_("Public key is empty, can't encrypt."))
         else:
             encryptor = RSAEncryptor(public_key=(e, n))
 
@@ -285,7 +285,7 @@ class RsaPage(Adw.Bin):
                 self._output_text.get_buffer().set_text(b64encode(ct).decode("ascii"))
             except MessageTooLongError as e:
                 self._window.show_error(
-                    _("message is longer than modulo, failed to encrypt.")
+                    _("Message is longer than modulo, failed to encrypt.")
                 )
 
     def _decrypt(self, _button: Gtk.Button) -> None:
@@ -294,7 +294,7 @@ class RsaPage(Adw.Bin):
         n = self.get_modulo()
 
         if d == b"" or n == b"":
-            self._window.show_error(_("private key is empty, can't decrypt."))
+            self._window.show_error(_("Private key is empty, can't decrypt."))
         else:
             encryptor = RSAEncryptor(private_key=(d, n))
 

@@ -38,7 +38,7 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         """Initialize main window."""
         super().__init__(
             application=application,
-            title=_("cys403_project"),
+            title=_("CYS-403 Project"),
         )
         self.set_size_request(500, 800)
 

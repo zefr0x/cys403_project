@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.5
 Type=Application
-Name=cys403_project
+Name=CYS-403 Project
 Comment=Simple text and image encryption.
 GenericName=Encryption Utility
 Exec=cys403_project

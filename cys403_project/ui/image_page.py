@@ -68,7 +68,7 @@ class KeyGenOptionsDialog(Adw.Dialog):
 
     def __init__(self) -> None:
         """Initialize the dialog."""
-        super().__init__(title=_("Key Generations Options"), hexpand=True)
+        super().__init__(title=_("Key Generation Options"), hexpand=True)
 
         layout = Adw.ToolbarView()
         self.set_child(layout)
