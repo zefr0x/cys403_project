@@ -2,11 +2,11 @@
 Version=1.5
 Type=Application
 Name=cys403_project
-Comment=
-GenericName=
+Comment=Simple text and image encryption.
+GenericName=Encryption Utility
 Exec=cys403_project
 SingleMainWindow=true
 Icon=io.github.zefr0x.cys403_project
 Terminal=false
-Categories=
-Keywords=
+Categories=Utility;Education;
+Keywords=rsa;cipher;
