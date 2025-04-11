@@ -131,9 +131,12 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         self._overlay.dismiss_all()  # type: ignore[attr-defined]
         self._overlay.add_toast(
             Adw.Toast(
-                # TODO: Improve error messages style and colouring.
-                title="<b><span foreground='red'>Error:</span></b> " + msg,
-                use_markup=True,
+                custom_title=Gtk.Label(
+                    label=_("<b>ERROR: %s</b>") % msg,
+                    css_classes=("error",),
+                    use_markup=True,
+                    wrap=True,
+                )
             )
         )
 
