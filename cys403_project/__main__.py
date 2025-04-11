@@ -5,16 +5,16 @@ import gettext
 import locale
 import sys
 
-APP_ID = "@APP_ID@"
+BASE_ID = "@BASE_ID@"
 PKG_DATA_DIR = "@pkgdatadir@"
 LOCALE_DIR = "@localedir@"
 
 sys.path.insert(1, PKG_DATA_DIR)
 
-locale.bindtextdomain(APP_ID, LOCALE_DIR)
-locale.textdomain(APP_ID)
-gettext.bindtextdomain(APP_ID, LOCALE_DIR)
-gettext.textdomain(APP_ID)
+locale.bindtextdomain(BASE_ID, LOCALE_DIR)
+locale.textdomain(BASE_ID)
+gettext.bindtextdomain(BASE_ID, LOCALE_DIR)
+gettext.textdomain(BASE_ID)
 
 
 def main() -> int:
