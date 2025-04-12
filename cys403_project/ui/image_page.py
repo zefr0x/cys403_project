@@ -1,11 +1,12 @@
 """Image encryption page."""
 
+import binascii
 import multiprocessing
 from base64 import b64decode, b64encode
 from enum import Enum
 from gettext import gettext as _
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import gi
 from PIL import Image
@@ -231,14 +232,19 @@ class ImagePage(Adw.Bin):
 
         options_dialog.present(self._window)
 
-    def get_private_key(self) -> bytes:
+    def get_private_key(self) -> Optional[bytes]:
         """Get the private key from the ui."""
         buf = self._private_key.get_buffer()
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
-        # TODO: Show error when failed to parse.
-        return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
+        try:
+            return b64decode(
+                buf.get_text(start_iter, end_iter, include_hidden_chars=False)
+            )
+        except binascii.Error:
+            self._window.show_error(_("Private key input contain invalid base64 text."))
+            return None
 
     def _select_input(self, _button: Gtk.Button) -> None:
         """Get input path to open image."""
@@ -322,7 +328,9 @@ class ImagePage(Adw.Bin):
         path = file.get_path()
 
         if path:
-            if path.endswith(".cipher_image"):
+            private_key = self.get_private_key()
+
+            if path.endswith(".cipher_image") and private_key:
                 cm = CipherImage.read_from_file(Path(path))
 
                 self._input_mode = BinMode.CIPHER_IMAGE
@@ -330,8 +338,7 @@ class ImagePage(Adw.Bin):
                 self._input_buffer_shape = cm.get_size()
 
                 display_buffer = self.input_buffer[
-                    len(self.get_private_key()) : cm.width * cm.height * 3
-                    + len(self.get_private_key())
+                    len(private_key) : cm.width * cm.height * 3 + len(private_key)
                 ]
 
                 if len(display_buffer) == cm.width * cm.height * 3:
@@ -393,7 +400,9 @@ class ImagePage(Adw.Bin):
 
     def _encrypt(self, _button: Gtk.Button) -> None:
         """Encrypt the input image using the key."""
-        if self.get_private_key():
+        private_key = self.get_private_key()
+
+        if private_key:
             if hasattr(self, "input_buffer"):
                 self._output_mode = BinMode.CIPHER_IMAGE
                 self.output_buffer_shape = self._input_buffer_shape
@@ -401,7 +410,7 @@ class ImagePage(Adw.Bin):
                 self.set_buttons_sensitivity(False)
                 self._save_output_button.set_sensitive(False)
 
-                process = Encrypt(self)
+                process = Encrypt(self, private_key)
                 process.start()
                 GLib.timeout_add(100, process.check_for_result)
             else:
@@ -413,7 +422,9 @@ class ImagePage(Adw.Bin):
 
     def _decrypt(self, _button: Gtk.Button) -> None:
         """Decrypt the input image using the key."""
-        if self.get_private_key():
+        private_key = self.get_private_key()
+
+        if private_key:
             if hasattr(self, "input_buffer"):
                 self._output_mode = BinMode.PLAIN_IMAGE
                 self.output_buffer_shape = self._input_buffer_shape
@@ -421,7 +432,7 @@ class ImagePage(Adw.Bin):
                 self.set_buttons_sensitivity(False)
                 self._save_output_button.set_sensitive(False)
 
-                process = Decrypt(self)
+                process = Decrypt(self, private_key)
                 process.start()
                 GLib.timeout_add(100, process.check_for_result)
 
@@ -456,16 +467,17 @@ class ImagePage(Adw.Bin):
 class Encrypt(multiprocessing.Process):
     """Encrypt process."""
 
-    def __init__(self, page: ImagePage) -> None:
+    def __init__(self, page: ImagePage, private_key: bytes) -> None:
         """Initialize the process."""
         super().__init__(daemon=True)
         self.page = page
+        self.private_key = private_key
 
         self.parent_conn, self.child_conn = multiprocessing.Pipe()
 
     def run(self) -> None:
         """CPU intensive task."""
-        encryptor = ImageEncryptor(key=self.page.get_private_key())
+        encryptor = ImageEncryptor(key=self.private_key)
 
         self.child_conn.send(encryptor.encrypt(self.page.input_buffer))
 
@@ -476,8 +488,8 @@ class Encrypt(multiprocessing.Process):
 
             pixbuf = bytes_to_pixbuf(
                 self.page.output_buffer[
-                    len(self.page.get_private_key()) : len(self.page.input_buffer)
-                    + len(self.page.get_private_key())
+                    len(self.private_key) : len(self.page.input_buffer)
+                    + len(self.private_key)
                 ],
                 self.page.output_buffer_shape,
             )
@@ -494,16 +506,17 @@ class Encrypt(multiprocessing.Process):
 class Decrypt(multiprocessing.Process):
     """Decrypt process."""
 
-    def __init__(self, page: ImagePage) -> None:
+    def __init__(self, page: ImagePage, private_key: bytes) -> None:
         """Initialize the process."""
         super().__init__(daemon=True)
         self.page = page
+        self.private_key = private_key
 
         self.parent_conn, self.child_conn = multiprocessing.Pipe()
 
     def run(self) -> None:
         """CPU intensive task."""
-        encryptor = ImageEncryptor(key=self.page.get_private_key())
+        encryptor = ImageEncryptor(key=self.private_key)
 
         self.child_conn.send(encryptor.decrypt(self.page.input_buffer))
 

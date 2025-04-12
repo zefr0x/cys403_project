@@ -1,9 +1,10 @@
 """RSA encryption page."""
 
+import binascii
 import multiprocessing
 from base64 import b64decode, b64encode
 from gettext import gettext as _
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import gi
 
@@ -236,41 +237,70 @@ class RsaPage(Adw.Bin):
         )
         self._modulo.get_buffer().set_text(b64encode(key[0][1]).decode("ascii"))
 
-    def get_public_exponent(self) -> bytes:
+    def get_public_exponent(self) -> Optional[bytes]:
         """Get the public exponent from the ui."""
         buf = self._public_exponent.get_buffer()
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
-        # TODO: Show error when failed to parse.
-        return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
+        text = buf.get_text(start_iter, end_iter, include_hidden_chars=False)
 
-    def get_private_exponent(self) -> bytes:
+        if text:
+            try:
+                return b64decode(text)
+            except binascii.Error:
+                self._window.show_error(
+                    _("Public exponent input contain invalid base64 text.")
+                )
+                return None
+        else:
+            self._window.show_error(_("Public exponent is empty, can't operate."))
+            return None
+
+    def get_private_exponent(self) -> Optional[bytes]:
         """Get the private exponent from the ui."""
         buf = self._private_exponent.get_buffer()
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
-        # TODO: Show error when failed to parse.
-        return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
+        text = buf.get_text(start_iter, end_iter, include_hidden_chars=False)
 
-    def get_modulo(self) -> bytes:
+        if text:
+            try:
+                return b64decode(text)
+            except binascii.Error:
+                self._window.show_error(
+                    _("Private exponent input contain invalid base64 text.")
+                )
+                return None
+        else:
+            self._window.show_error(_("Private exponent is empty, can't operate."))
+            return None
+
+    def get_modulo(self) -> Optional[bytes]:
         """Get the modulo from the ui."""
         buf = self._modulo.get_buffer()
         start_iter = buf.get_start_iter()
         end_iter = buf.get_end_iter()
 
-        # TODO: Show error when failed to parse.
-        return b64decode(buf.get_text(start_iter, end_iter, include_hidden_chars=False))
+        text = buf.get_text(start_iter, end_iter, include_hidden_chars=False)
+
+        if text:
+            try:
+                return b64decode(text)
+            except binascii.Error:
+                self._window.show_error(_("Modulo input contain invalid base64 text."))
+                return None
+        else:
+            self._window.show_error(_("Modulo is empty, can't operate."))
+            return None
 
     def _encrypt(self, _button: Gtk.Button) -> None:
         """Encrypt the input using the key."""
         e = self.get_public_exponent()
         n = self.get_modulo()
 
-        if e == b"" or n == b"":
-            self._window.show_error(_("Public key is empty, can't encrypt."))
-        else:
+        if e and n:
             encryptor = RSAEncryptor(public_key=(e, n))
 
             buf = self._input_text.get_buffer()
@@ -293,25 +323,36 @@ class RsaPage(Adw.Bin):
         d = self.get_private_exponent()
         n = self.get_modulo()
 
-        if d == b"" or n == b"":
-            self._window.show_error(_("Private key is empty, can't decrypt."))
-        else:
+        if d and n:
             encryptor = RSAEncryptor(private_key=(d, n))
 
             buf = self._input_text.get_buffer()
             start_iter = buf.get_start_iter()
             end_iter = buf.get_end_iter()
 
-            pt = buf.get_text(start_iter, end_iter, include_hidden_chars=False).encode()
-
             try:
-                # TODO: Show error when failed to parse.
-                ct = encryptor.decrypt(b64decode(pt))
+                ct = b64decode(
+                    buf.get_text(
+                        start_iter, end_iter, include_hidden_chars=False
+                    ).encode()
+                )
 
-                self._output_text.get_buffer().set_text(ct.decode("utf-8"))
-            except PadError:
+                try:
+                    pt = encryptor.decrypt(ct)
+
+                    try:
+                        self._output_text.get_buffer().set_text(pt.decode("utf-8"))
+                    except UnicodeDecodeError:
+                        self._window.show_error(
+                            _("Plain text output contain invalid utf-8 bytes.")
+                        )
+                except PadError:
+                    self._window.show_error(
+                        _("Invalid padding in decrypted message, failed to decrypt.")
+                    )
+            except binascii.Error:
                 self._window.show_error(
-                    _("Invalid padding in decrypted message, failed to decrypt.")
+                    _("Cipher text input contain invalid base64 text.")
                 )
 
     @property
