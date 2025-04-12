@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: io.github.zefr0x.cys403_project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 02:42+0300\n"
+"POT-Creation-Date: 2025-04-12 20:14+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,178 +52,210 @@ msgstr ""
 msgid "Application Icon"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:71 cys403_project/ui/rsa_page.py:34
+#: cys403_project/ui/image_page.py:72 cys403_project/ui/rsa_page.py:35
 msgid "Key Generation Options"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:82 cys403_project/ui/rsa_page.py:45
+#: cys403_project/ui/image_page.py:83 cys403_project/ui/rsa_page.py:46
 msgid "Cancel"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:87 cys403_project/ui/rsa_page.py:50
+#: cys403_project/ui/image_page.py:88 cys403_project/ui/rsa_page.py:51
 msgid "Generate"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:93
+#: cys403_project/ui/image_page.py:94
 msgid "Symmetric Key Options"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:103
+#: cys403_project/ui/image_page.py:104
 msgid "Key Size"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:104
+#: cys403_project/ui/image_page.py:105
 msgid "Number of Bytes"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:140 cys403_project/ui/rsa_page.py:113
+#: cys403_project/ui/image_page.py:141 cys403_project/ui/rsa_page.py:114
 msgid "Generate New Key"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:148
+#: cys403_project/ui/image_page.py:149
 msgid "<b>Private Key</b>"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:169
+#: cys403_project/ui/image_page.py:170
 msgid "Open Image File"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:176
+#: cys403_project/ui/image_page.py:177
 msgid "<b>Input Image</b>"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:186
+#: cys403_project/ui/image_page.py:187
 msgid "Encrypt Image"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:190
+#: cys403_project/ui/image_page.py:191
 msgid "Decrypt Image"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:200
+#: cys403_project/ui/image_page.py:201
 msgid "Save Image File"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:208
+#: cys403_project/ui/image_page.py:209
 msgid "<b>Output Image</b>"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:246 cys403_project/ui/image_page.py:286
+#: cys403_project/ui/image_page.py:246
+msgid "Private key input contain invalid base64 text."
+msgstr ""
+
+#: cys403_project/ui/image_page.py:252 cys403_project/ui/image_page.py:292
 msgid "Select Input Image"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:251 cys403_project/ui/image_page.py:291
+#: cys403_project/ui/image_page.py:257 cys403_project/ui/image_page.py:297
 msgid "_Cancel"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:252
+#: cys403_project/ui/image_page.py:258
 msgid "_Open"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:292
+#: cys403_project/ui/image_page.py:298
 msgid "_Save"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:305
+#: cys403_project/ui/image_page.py:311
 msgid "Output has not been determined, there is noting to be saved."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:350
+#: cys403_project/ui/image_page.py:357
 msgid "Failed to open and display image, key size doesn't match."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:355
+#: cys403_project/ui/image_page.py:362
 msgid "Corrupted Input"
 msgstr ""
 
-#: cys403_project/ui/image_page.py:391
+#: cys403_project/ui/image_page.py:398
 msgid "Output bufer is empty, there is noting to be save."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:409
+#: cys403_project/ui/image_page.py:418
 msgid "Input buffer is empty, there is noting to be encrypted."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:412
+#: cys403_project/ui/image_page.py:421
 msgid "Private key is empty, can't encrypt."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:430
+#: cys403_project/ui/image_page.py:441
 msgid "Input buffer is empty, there is noting to be decrypted."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:433 cys403_project/ui/rsa_page.py:297
+#: cys403_project/ui/image_page.py:444
 msgid "Private key is empty, can't decrypt."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:532
+#: cys403_project/ui/image_page.py:545
 msgid "Failed to decrypt and display image, key size doesn't match."
 msgstr ""
 
-#: cys403_project/ui/image_page.py:536
+#: cys403_project/ui/image_page.py:549
 msgid "Corrupted Output"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:56
+#: cys403_project/ui/rsa_page.py:57
 msgid "RSA Key Options"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:68
+#: cys403_project/ui/rsa_page.py:69
 msgid "Modulo Size"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:69
+#: cys403_project/ui/rsa_page.py:70
 msgid "Exponents of 2"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:76
+#: cys403_project/ui/rsa_page.py:77
 msgid "Public Exponent"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:77
+#: cys403_project/ui/rsa_page.py:78
 msgid "Must be prime number"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:122
+#: cys403_project/ui/rsa_page.py:123
 msgid "<b>Modulo</b>"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:134
+#: cys403_project/ui/rsa_page.py:135
 msgid "<b>Public Exponent</b>"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:147
+#: cys403_project/ui/rsa_page.py:148
 msgid "<b>Private Exponent</b>"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:166
+#: cys403_project/ui/rsa_page.py:167
 msgid "<b>Input</b>"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:176
+#: cys403_project/ui/rsa_page.py:177
 msgid "Encrypt"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:180
+#: cys403_project/ui/rsa_page.py:181
 msgid "Decrypt"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:188
+#: cys403_project/ui/rsa_page.py:189
 msgid "<b>Output</b>"
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:272
-msgid "Public key is empty, can't encrypt."
+#: cys403_project/ui/rsa_page.py:253
+msgid "Public exponent input contain invalid base64 text."
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:288
+#: cys403_project/ui/rsa_page.py:257
+msgid "Public exponent is empty, can't operate."
+msgstr ""
+
+#: cys403_project/ui/rsa_page.py:273
+msgid "Private exponent input contain invalid base64 text."
+msgstr ""
+
+#: cys403_project/ui/rsa_page.py:277
+msgid "Private exponent is empty, can't operate."
+msgstr ""
+
+#: cys403_project/ui/rsa_page.py:292
+msgid "Modulo input contain invalid base64 text."
+msgstr ""
+
+#: cys403_project/ui/rsa_page.py:295
+msgid "Modulo is empty, can't operate."
+msgstr ""
+
+#: cys403_project/ui/rsa_page.py:318
 msgid "Message is longer than modulo, failed to encrypt."
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:314
+#: cys403_project/ui/rsa_page.py:347
+msgid "Plain text output contain invalid utf-8 bytes."
+msgstr ""
+
+#: cys403_project/ui/rsa_page.py:351
 msgid "Invalid padding in decrypted message, failed to decrypt."
 msgstr ""
 
-#: cys403_project/ui/rsa_page.py:353
+#: cys403_project/ui/rsa_page.py:355
+msgid "Cipher text input contain invalid base64 text."
+msgstr ""
+
+#: cys403_project/ui/rsa_page.py:394
 msgid "Public exponent is not prime number, failed to generate a key."
 msgstr ""
