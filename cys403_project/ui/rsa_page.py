@@ -111,7 +111,7 @@ class RsaPage(Adw.Bin):
         self.split_view.set_sidebar(sidebar_box)
         sidebar_box.set_size_request(250, 0)
 
-        self._key_gen_button = Gtk.Button(label=_("Generate New Key"))
+        self._key_gen_button = Gtk.Button(label=_("Generate New Key…"))
         sidebar_box.append(self._key_gen_button)
         self._key_gen_button.connect("clicked", self._generate_new_key)
 

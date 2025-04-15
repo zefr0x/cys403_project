@@ -138,7 +138,7 @@ class ImagePage(Adw.Bin):
         )
         self._sidebar_box.set_size_request(250, 0)
 
-        self._key_gen_button = Gtk.Button(label=_("Generate New Key"))
+        self._key_gen_button = Gtk.Button(label=_("Generate New Key…"))
         self._sidebar_box.append(self._key_gen_button)
         self._key_gen_button.connect("clicked", self._generate_new_key)
 
@@ -167,7 +167,7 @@ class ImagePage(Adw.Bin):
         self._input_bin = Adw.Bin(vexpand=True)
         input_file_box.append(self._input_bin)
 
-        self._open_input_button = Gtk.Button(label=_("Open Image File"))
+        self._open_input_button = Gtk.Button(label=_("Open Image File…"))
         input_file_box.append(self._open_input_button)
         self._open_input_button.connect("clicked", self._select_input)
 
@@ -198,7 +198,7 @@ class ImagePage(Adw.Bin):
         output_file_box.append(self.output_bin)
 
         self._save_output_button = Gtk.Button(
-            label=_("Save Image File"), sensitive=False
+            label=_("Save Image File…"), sensitive=False
         )
         output_file_box.append(self._save_output_button)
         self._save_output_button.connect("clicked", self._select_output)
