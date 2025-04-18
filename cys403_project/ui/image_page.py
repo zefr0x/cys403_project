@@ -100,7 +100,7 @@ class KeyGenOptionsDialog(Adw.Dialog):
         )
         layout.set_content(options_group)
 
-        self._key_size = Adw.SpinRow.new_with_range(min=1, max=255, step=1)
+        self._key_size = Adw.SpinRow.new_with_range(min=16, max=32, step=8)
         self._key_size.set_title(_("Key Size"))
         self._key_size.set_subtitle(_("Number of Bytes"))
         self._key_size.set_value(16)
