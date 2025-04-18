@@ -289,7 +289,7 @@ class ImagePage(Adw.Bin):
     def _select_output(self, _button: Gtk.Button) -> None:
         """Get output path to save image."""
         dialog = Gtk.FileChooserDialog(
-            title=_("Select Input Image"),
+            title=_("Save Image File"),
             action=Gtk.FileChooserAction.SAVE,
             transient_for=self._window,
         )
