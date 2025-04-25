@@ -4,6 +4,7 @@
     <project_license>GPL-3.0-only</project_license>
     <id>io.github.zefr0x.cys403_project</id>
     <name>CYS-403 Project</name>
+    <name xml:lang="ar">مشروع CYS-403</name>
     <developer id="io.github.zefr0x">
         <name translatable="no">zefr0x</name>
     </developer>

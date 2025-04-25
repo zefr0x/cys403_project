@@ -1,0 +1,272 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the io.github.zefr0x.cys403_project package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# zefr0x <zer0-x.7ty50@aleeas.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: io.github.zefr0x.cys403_project\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-25 21:08+0300\n"
+"PO-Revision-Date: 2025-04-25 21:15+0300\n"
+"Last-Translator: zefr0x <zer0-x.7ty50@aleeas.com>\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural= n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"X-Generator: Gtranslator 48.0\n"
+
+#: data/io.github.zefr0x.cys403_project.desktop.in:4
+#: data/io.github.zefr0x.cys403_project.metainfo.xml.in:6
+#: cys403_project/ui/main_window.py:41
+msgid "CYS-403 Project"
+msgstr "مشروع CYS-403"
+
+#: data/io.github.zefr0x.cys403_project.desktop.in:5
+msgid "Simple text and image encryption."
+msgstr "أداة بسيطة لتعمية النصوص والصور."
+
+#: data/io.github.zefr0x.cys403_project.desktop.in:6
+msgid "Encryption Utility"
+msgstr "أداة تعمية"
+
+#: data/io.github.zefr0x.cys403_project.desktop.in:12
+msgid "rsa;cipher;"
+msgstr "آر‌إس‌أي;تعمية;"
+
+#: cys403_project/ui/main_window.py:64
+msgid "RSA"
+msgstr "آر‌إس‌أي"
+
+#: cys403_project/ui/main_window.py:69
+msgid "Image"
+msgstr "صورة"
+
+#: cys403_project/ui/main_window.py:140
+#, python-format
+msgid "<b>ERROR: %s</b>"
+msgstr "<b>خطأ: %s</b>"
+
+#: cys403_project/ui/main_window.py:157
+msgid "translator-credits"
+msgstr "zefr0x"
+
+#: cys403_project/ui/main_window.py:166
+msgid "External Libraries"
+msgstr "المكتبات الخارجية"
+
+#: cys403_project/ui/main_window.py:175
+msgid "Application Icon"
+msgstr "أيقونة التطبيق"
+
+#: cys403_project/ui/image_page.py:72 cys403_project/ui/rsa_page.py:35
+msgid "Key Generation Options"
+msgstr "خيارات توليد المفتاح"
+
+#: cys403_project/ui/image_page.py:83 cys403_project/ui/rsa_page.py:46
+msgid "Cancel"
+msgstr "ألغِ"
+
+#: cys403_project/ui/image_page.py:88 cys403_project/ui/rsa_page.py:51
+msgid "Generate"
+msgstr "ولِّد"
+
+#: cys403_project/ui/image_page.py:94
+msgid "Symmetric Key Options"
+msgstr "خيارات المفتاح المتماثل"
+
+#: cys403_project/ui/image_page.py:104
+msgid "Key Size"
+msgstr "حجم المفتاح"
+
+#: cys403_project/ui/image_page.py:105
+msgid "Number of Bytes"
+msgstr "عدد البايتات"
+
+#: cys403_project/ui/image_page.py:141 cys403_project/ui/rsa_page.py:114
+msgid "Generate New Key…"
+msgstr "ولِّد مفتاح جديد…"
+
+#: cys403_project/ui/image_page.py:149
+msgid "<b>Private Key</b>"
+msgstr "<b>المفتاح الخاص</b>"
+
+#: cys403_project/ui/image_page.py:170
+msgid "Open Image File…"
+msgstr "افتح ملف صورة…"
+
+#: cys403_project/ui/image_page.py:177
+msgid "<b>Input Image</b>"
+msgstr "<b>الصورة المُدخلة</b>"
+
+#: cys403_project/ui/image_page.py:187
+msgid "Encrypt Image"
+msgstr "عَمِّ الصورة"
+
+#: cys403_project/ui/image_page.py:191
+msgid "Decrypt Image"
+msgstr "فُكْ تعمية الصورة"
+
+#: cys403_project/ui/image_page.py:201
+msgid "Save Image File…"
+msgstr "احفظ ملف الصورة…"
+
+#: cys403_project/ui/image_page.py:209
+msgid "<b>Output Image</b>"
+msgstr "<b>الصورة المُدخلة</b>"
+
+#: cys403_project/ui/image_page.py:246
+msgid "Private key input contain invalid base64 text."
+msgstr "مُدخَل المفتاح الخاص ذو ترميز الأساس64 يحتوي على نص غير صالح."
+
+#: cys403_project/ui/image_page.py:252 cys403_project/ui/image_page.py:292
+msgid "Select Input Image"
+msgstr "اختر الصورة المُدخلة"
+
+#: cys403_project/ui/image_page.py:257 cys403_project/ui/image_page.py:297
+msgid "_Cancel"
+msgstr "أل_غِ"
+
+#: cys403_project/ui/image_page.py:258
+msgid "_Open"
+msgstr "ا_فتح"
+
+#: cys403_project/ui/image_page.py:298
+msgid "_Save"
+msgstr "ا_حفظ"
+
+#: cys403_project/ui/image_page.py:311
+msgid "Output has not been determined, there is noting to be saved."
+msgstr "لم تُحَدَّد المخرجات، لا يوجد ما يمكن حفظه."
+
+#: cys403_project/ui/image_page.py:357
+msgid "Failed to open and display image, key size doesn't match."
+msgstr "تعذَّرَ فتح وعرض الصورة، حجم المفتاح غير مطابق."
+
+#: cys403_project/ui/image_page.py:362
+msgid "Corrupted Input"
+msgstr "مُدْخَل تالِف"
+
+#: cys403_project/ui/image_page.py:398
+msgid "Output buffer is empty, there is noting to be save."
+msgstr "صِوان الإخراج فارغ، لا يوجد ما يمكن حفظه."
+
+#: cys403_project/ui/image_page.py:418
+msgid "Input buffer is empty, there is noting to be encrypted."
+msgstr "صِوان الإدخال فارغ، لا يوجد ما يمكن تعميته."
+
+#: cys403_project/ui/image_page.py:421
+msgid "Private key is empty, can't encrypt."
+msgstr "المفتاح الخاص فارغ، تتعذَّرُ التعمية."
+
+#: cys403_project/ui/image_page.py:441
+msgid "Input buffer is empty, there is noting to be decrypted."
+msgstr "صِوان الإدخال فارغ، لا يوجد ما يمكن فَك تعميته."
+
+#: cys403_project/ui/image_page.py:444
+msgid "Private key is empty, can't decrypt."
+msgstr "المفتاح الخاص فارغ، تتعذَّرُ فَك التعمية."
+
+#: cys403_project/ui/image_page.py:545
+msgid "Failed to decrypt and display image, key size doesn't match."
+msgstr "تتعذَّر فك تعمية الصورة وعرضها، حجم المفتاح غير مطابق."
+
+#: cys403_project/ui/image_page.py:549
+msgid "Corrupted Output"
+msgstr "مُخرَج تالف"
+
+#: cys403_project/ui/rsa_page.py:57
+msgid "RSA Key Options"
+msgstr "خيارات مفتاح آر‌إس‌أي"
+
+#: cys403_project/ui/rsa_page.py:69
+msgid "Modulo Size"
+msgstr "حجم عامل القسمة مع الباقي"
+
+#: cys403_project/ui/rsa_page.py:70
+msgid "Exponents of 2"
+msgstr "أُسُس العدد 2"
+
+#: cys403_project/ui/rsa_page.py:77
+msgid "Public Exponent"
+msgstr "الأُس العام"
+
+#: cys403_project/ui/rsa_page.py:78
+msgid "Must be prime number"
+msgstr "يجب أن يكون عددًا أوليًا"
+
+#: cys403_project/ui/rsa_page.py:123
+msgid "<b>Modulo</b>"
+msgstr "<b>عامل القسمة مع الباقي</b>"
+
+#: cys403_project/ui/rsa_page.py:135
+msgid "<b>Public Exponent</b>"
+msgstr "<b>الأُس العام</b>"
+
+#: cys403_project/ui/rsa_page.py:148
+msgid "<b>Private Exponent</b>"
+msgstr "<b>الأُس الخاص</b>"
+
+#: cys403_project/ui/rsa_page.py:167
+msgid "<b>Input</b>"
+msgstr "<b>المُدخَل</b>"
+
+#: cys403_project/ui/rsa_page.py:177
+msgid "Encrypt"
+msgstr "عَمِّ"
+
+#: cys403_project/ui/rsa_page.py:181
+msgid "Decrypt"
+msgstr "فُك التعمية"
+
+#: cys403_project/ui/rsa_page.py:189
+msgid "<b>Output</b>"
+msgstr "<b>المُخرَج</b>"
+
+#: cys403_project/ui/rsa_page.py:253
+msgid "Public exponent input contain invalid base64 text."
+msgstr "مُدخَل الاُس العام ذو ترميز الأساس64 معطوب."
+
+#: cys403_project/ui/rsa_page.py:257
+msgid "Public exponent is empty, can't operate."
+msgstr "الأُس العام فارغ، يتعذَّر التنفيذ."
+
+#: cys403_project/ui/rsa_page.py:273
+msgid "Private exponent input contain invalid base64 text."
+msgstr "مُدخَل الاُس الخاص ذو ترميز الأساس64 معطوب."
+
+#: cys403_project/ui/rsa_page.py:277
+msgid "Private exponent is empty, can't operate."
+msgstr "الأُس الخاص فارغ، يتعذَّر التنفيذ."
+
+#: cys403_project/ui/rsa_page.py:292
+msgid "Modulo input contain invalid base64 text."
+msgstr "مُدخَل عامل القسمة مع الباقي ذو ترميز الأساس64 معطوب."
+
+#: cys403_project/ui/rsa_page.py:295
+msgid "Modulo is empty, can't operate."
+msgstr "عامل القسمة مع الباقي فارغ، يتعذَّر التنفيذ."
+
+#: cys403_project/ui/rsa_page.py:318
+msgid "Message is longer than modulo, failed to encrypt."
+msgstr "الرسالة أطول من عامل القسمة مع الباقي، تتعذَّر التعمية."
+
+#: cys403_project/ui/rsa_page.py:347
+msgid "Plain text output contain invalid utf-8 bytes."
+msgstr "المُخرجات النَصِيَّة تحوي بايتات ترميز utf-8 معطوبة."
+
+#: cys403_project/ui/rsa_page.py:351
+msgid "Invalid padding in decrypted message, failed to decrypt."
+msgstr "حشوة معطوبة في الرسالة المُفَك تعميتها، يتعذَّر فك التعمية."
+
+#: cys403_project/ui/rsa_page.py:355
+msgid "Cipher text input contain invalid base64 text."
+msgstr "مُدخَل النص المُعمى ذو ترميز الأساس64 معطوب."
+
+#: cys403_project/ui/rsa_page.py:394
+msgid "Public exponent is not prime number, failed to generate a key."
+msgstr "الأُس العام ليس عددًا أوليًا، يتعذَّر توليد مفتاح."
