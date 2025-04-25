@@ -395,7 +395,7 @@ class ImagePage(Adw.Bin):
                     pm.save(path)
             else:
                 self._window.show_error(
-                    _("Output bufer is empty, there is noting to be save.")
+                    _("Output buffer is empty, there is noting to be save.")
                 )
 
     def _encrypt(self, _button: Gtk.Button) -> None:

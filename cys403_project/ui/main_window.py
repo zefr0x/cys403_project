@@ -61,12 +61,12 @@ class Cys403ProjectMainWindow(Adw.ApplicationWindow):
         self._image_page = ImagePage(self)
 
         view_stack.add_titled_with_icon(
-            self._rsa_page, "rsa", "RSA", "network-wireless-encrypted-symbolic"
+            self._rsa_page, "rsa", _("RSA"), "network-wireless-encrypted-symbolic"
         )
         view_stack.add_titled_with_icon(
             self._image_page,
             "image",
-            "Image",
+            _("Image"),
             "image-x-generic-symbolic",
         )
 

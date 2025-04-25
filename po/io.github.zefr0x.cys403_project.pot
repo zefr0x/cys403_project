@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: io.github.zefr0x.cys403_project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-16 02:09+0300\n"
+"POT-Creation-Date: 2025-04-25 21:08+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,6 +33,14 @@ msgstr ""
 
 #: data/io.github.zefr0x.cys403_project.desktop.in:12
 msgid "rsa;cipher;"
+msgstr ""
+
+#: cys403_project/ui/main_window.py:64
+msgid "RSA"
+msgstr ""
+
+#: cys403_project/ui/main_window.py:69
+msgid "Image"
 msgstr ""
 
 #: cys403_project/ui/main_window.py:140
@@ -141,7 +149,7 @@ msgid "Corrupted Input"
 msgstr ""
 
 #: cys403_project/ui/image_page.py:398
-msgid "Output bufer is empty, there is noting to be save."
+msgid "Output buffer is empty, there is noting to be save."
 msgstr ""
 
 #: cys403_project/ui/image_page.py:418
