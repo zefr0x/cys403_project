@@ -1,6 +1,6 @@
 project(
   'cys403_project',
-  version : '0.1.0',
+  version : '1.0.0',
   license : 'GPL3',
   default_options : ['warning_level=2'],
 )
