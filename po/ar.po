@@ -117,7 +117,7 @@ msgstr "احفظ ملف الصورة…"
 
 #: cys403_project/ui/image_page.py:209
 msgid "<b>Output Image</b>"
-msgstr "<b>الصورة المُدخلة</b>"
+msgstr "<b>الصورة المُخرجة</b>"
 
 #: cys403_project/ui/image_page.py:246
 msgid "Private key input contain invalid base64 text."
